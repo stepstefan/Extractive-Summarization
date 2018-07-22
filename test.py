@@ -6,6 +6,7 @@ Written as part of the blog post: https://www.khalidalnajjar.com/how-to-setup-an
 from stanfordcorenlp import StanfordCoreNLP
 import logging
 import json
+from nltk.tree import Tree  
 
 class StanfordNLP:
     def __init__(self, host='http://localhost', port=9000):
@@ -53,6 +54,8 @@ if __name__ == '__main__':
     #print("Annotate:", sNLP.annotate(text))
     #print("POS:", sNLP.pos(text))
     #printrint("Tokens:", sNLP.word_tokenize(text))
-    #print("NER:", sNLP.ner(text))
-    print("Parse:", sNLP.parse(text))
+    #print("NER:", sNLP.ner(text)))
+    a = sNLP.parse(text)
+    Tree.fromstring(a).pretty_print()
+    #print("Parse:", )
     #print("Dep Parse:", sNLP.dependency_parse(text))
