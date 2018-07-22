@@ -7,6 +7,7 @@ from stanfordcorenlp import StanfordCoreNLP
 import logging
 import json
 from nltk.tree import Tree  
+import nltk
 from xml.etree import ElementTree
 
 class StanfordNLP:
@@ -27,6 +28,9 @@ class StanfordNLP:
 
     def ner(self, sentence):
         return self.nlp.ner(sentence)
+
+    def tokenize_sentances(self, text_file):
+        return nltk.sent_tokenize(text_file)
 
     def parse(self, sentence):
         return Tree.fromstring(self.nlp.parse(sentence))
@@ -50,4 +54,4 @@ class StanfordNLP:
         return tokens
 
 def read_xml(file_name):
-    return ElementTree.parse(file_name).getroot().find('TEXT').text
+    return ElementTree.parse(file_name).getroot().find('TEXT').text.strip().replace('\n', '  ')
