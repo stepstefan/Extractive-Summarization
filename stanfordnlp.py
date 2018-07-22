@@ -28,7 +28,7 @@ class StanfordNLP:
         return self.nlp.ner(sentence)
 
     def parse(self, sentence):
-        return self.nlp.parse(sentence)
+        return Tree.fromstring(self.nlp.parse(sentence))
 
     def dependency_parse(self, sentence):
         return self.nlp.dependency_parse(sentence)
@@ -47,15 +47,3 @@ class StanfordNLP:
                 'ner': token['ner']
             }
         return tokens
-
-if __name__ == '__main__':
-    sNLP = StanfordNLP()
-    text = 'A blog post using Stanford CoreNLP Server. John hit the ball.'
-    #print("Annotate:", sNLP.annotate(text))
-    #print("POS:", sNLP.pos(text))
-    #printrint("Tokens:", sNLP.word_tokenize(text))
-    #print("NER:", sNLP.ner(text)))
-    a = sNLP.parse(text)
-    Tree.fromstring(a).pretty_print()
-    #print("Parse:", )
-    #print("Dep Parse:", sNLP.dependency_parse(text))
