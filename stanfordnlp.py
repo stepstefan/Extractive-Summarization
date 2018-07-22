@@ -7,6 +7,7 @@ from stanfordcorenlp import StanfordCoreNLP
 import logging
 import json
 from nltk.tree import Tree  
+from xml.etree import ElementTree
 
 class StanfordNLP:
     def __init__(self, host='http://localhost', port=9000):
@@ -47,3 +48,6 @@ class StanfordNLP:
                 'ner': token['ner']
             }
         return tokens
+
+def read_xml(file_name):
+    return ElementTree.parse(file_name).getroot().find('TEXT').text
