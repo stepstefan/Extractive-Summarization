@@ -2,6 +2,7 @@ from stanfordcorenlp import StanfordCoreNLP
 import json
 from nltk.tree import Tree
 from stanfordnlp import StanfordNLP
+import numpy as np
 
 sNLP = StanfordNLP()
 
@@ -21,17 +22,38 @@ class Wordftrs:
         ''' the frequency of documents which conntains this word in the current cluster'''
         return 0
 
-    def pos(word):
+    def pos(self, wordtuple):
         ''' a 4-dimension binary vector indicates whether the word is a noun, a verb, an adjective or an adverb. If the word has another part-of-speech, the vector is all-zero'''
-        return 0
+        if wordtuple[1][0]=="N":
+            feature = np.array([1,0,0,0])
+        elif wordtuple[1][0]=="V":
+            feature = np.array([0,1,0,0])
+        elif wordtuple[1][0]=="J":
+            feature = np.array([0,0,1,0])
+        elif wordtuple[1][0]=="R":
+            feature = np.array([0,0,0,1])
+        else:
+            feature = np.array([0,0,0,0])
+        
+        return feature
 
-    def namedentity(word):
+    def namedentity(self, word):
         ''' a binary value equals one iff the output of named entity classifier from CoreNLP is not entity'''
-        return 0
+        ne=sNLP.ner(word)[0]
+        if ne[1]=="O":
+            feature=0
+        else:
+            feature=1
+            
+        return feature
 
-    def number(word):
+    def number(self, wordtuple):
         ''' a binary value denotes if whether the word is a number'''
-        return 0
+        if wordtuple[1]=="CD":
+            feature = 1
+        else:
+            feature = 0
+        return feature
     
     def slen(word, slist):
         '''The maximal length of sentences owning the word'''
