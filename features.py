@@ -22,7 +22,7 @@ class Wordftrs:
                 counter += (word == wrd)
         return counter
 
-    def idf(word, claster):
+    def idf(self, word, claster):
         ''' total document number in the datasets, devided by the frequency of documents which contains the word'''
         counter = 0
         for slist in claster:
@@ -31,11 +31,18 @@ class Wordftrs:
                 if word in wlist:
                     counter += 1
                     break
-        return counter
+        return counter / len(claster)
 
-    def cf(word, slist):
+    def cf(self, word, slist):
         ''' the frequency of documents which conntains this word in the current cluster'''
-        pass
+        counter = 0
+        for slist in claster:
+            for sentence in slist:
+                wlist = [w.lower() for w in  sNLP.word_tokenize(sentence)]
+                if word in wlist:
+                    counter += 1
+                    break
+        return counter
 
     def pos(self, wordtuple):
         ''' a 4-dimension binary vector indicates whether the word is a noun, a verb, an adjective or an adverb. If the word has another part-of-speech, the vector is all-zero'''
