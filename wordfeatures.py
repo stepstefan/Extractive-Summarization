@@ -2,6 +2,8 @@ from stanfordcorenlp import StanfordCoreNLP
 import json
 from nltk.tree import Tree
 from stanfordnlp import StanfordNLP
+import re
+
 
 sNLP = StanfordNLP()
 
@@ -9,13 +11,19 @@ class Wordftrs:
 
 # word, slist - list of sentences in document
 
-    def tf(word, slist):
+    def tf(self, word, slist):
         ''' term frequency '''
-        return 0
+        word = word.lower()
+        counter = 0
+        for sentence in slist:
+            wlist = [w.lower() for w in  sNLP.word_tokenize(sentence)]
+            for wrd in wlist:
+                counter += (word == wrd)
+        return counter
 
-    def idf(word,slist ):
+    def idf(word, slist):
         ''' total document number in the datasets, devided by the frequency of documents which contains the word'''
-        return 0
+        pass
 
     def cf(word, slist):
         ''' the frequency of documents which conntains this word in the current cluster'''
@@ -33,13 +41,19 @@ class Wordftrs:
         ''' a binary value denotes if whether the word is a number'''
         return 0
     
-    def slen(word, slist):
+    def slen(self, word, slist):
         '''The maximal length of sentences owning the word'''
-        return 0
+        word = word.lower()
+        maximal = 0
+        for sentence in slist:
+            wlist = [w.lower() for w in  sNLP.word_tokenize(sentence)]
+            if (word in wlist):
+                maximal = max(maximal, len(wlist))
+        return maximal
 
     def stf(word, slist):
         '''The maximal TF score of sentences owning the word'''
-        return 0
+        pass
 
     def scf(word, slist):
         '''The maximal CF score of sentences owning the word'''

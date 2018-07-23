@@ -29,7 +29,7 @@ class StanfordNLP:
     def ner(self, sentence):
         return self.nlp.ner(sentence)
 
-    def tokenize_sentances(self, text_file):
+    def sentances_tokenize(self, text_file):
         return nltk.sent_tokenize(text_file)
 
     def parse(self, sentence):
