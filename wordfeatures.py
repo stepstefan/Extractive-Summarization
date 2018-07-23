@@ -37,7 +37,7 @@ class Wordftrs:
             feature = np.array([0,1,0,0])
         elif wordtuple[1][0]=="J":
             feature = np.array([0,0,1,0])
-        elif wordtuple[1][0]=="R":
+        elif wordtuple[1][0:1]=="RB":
             feature = np.array([0,0,0,1])
         else:
             feature = np.array([0,0,0,0])
