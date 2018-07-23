@@ -97,6 +97,7 @@ class Sentenceftrs:
         return 0
 
 
+####### Word ####### 
 
 class Wordftrs:
     """
@@ -173,22 +174,45 @@ class Wordftrs:
         word = word.lower()
         maximal = 0
         for sentence in slist:
-            wlist = [w.lower() for w in  sNLP.word_tokenize(sentence)]
+            wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
             if (word in wlist):
                 maximal = max(maximal, len(wlist))
         return maximal
 
-    def stf(word, slist):
+    def stf(word, claster, tf_dic):
         '''The maximal TF score of sentences owning the word'''
-        pass
-
-    def scf(word, slist):
+        maximal = 0
+        for slist in claster:
+            for sentence in slist:
+                wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
+                if word in wlist:
+                    mx = max([tf_dic[wrd] for wrd in wlist])
+                    maximal = max(maximal, mx)
+        return maximal
+                
+    def scf(word, claster, cf_dic):
         '''The maximal CF score of sentences owning the word'''
-        return 0
+        maximal = 0
+        for slist in claster:
+            for sentence in slist:
+                wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
+                if word in wlist:
+                    mx = max([cf_dic[wrd] for wrd in wlist])
+                    maximal = max(maximal, mx)
+        return maximal
 
-    def sidf(word, slist):
+
+    def sidf(word, claster, idf_dic):
         '''The maximal IDF score of sentences owning the word'''
-        return 0
+        maximal = 0
+        for slist in claster:
+            for sentence in slist:
+                wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
+                if word in wlist:
+                    mx = max([idf_dic[wrd] for wrd in wlist])
+                    maximal = max(maximal, mx)
+        return maximal
+
     def ssubs(word, slist):
         '''The maximal sub-sentence count of sentences owning the word. A sub-sentence means the node label is S or @S in parsing tree'''
         return 0
