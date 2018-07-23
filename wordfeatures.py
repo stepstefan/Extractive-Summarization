@@ -4,7 +4,6 @@ from nltk.tree import Tree
 from stanfordnlp import StanfordNLP
 import numpy as np
 
-
 sNLP = StanfordNLP()
 
 class Wordftrs:
@@ -89,8 +88,5 @@ class Wordftrs:
     def sdepth(word, slist):
         '''The maximal parsing tree depth of sentences owning the word'''
         return 0
-
-
-
 
 

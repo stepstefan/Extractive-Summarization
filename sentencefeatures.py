@@ -3,8 +3,6 @@ from stanfordcorenlp import StanfordCoreNLP
 from nltk.tree import Tree
 import numpy as np
 from wordfeatures import Wordftrs
-
-
 sNLP = StanfordNLP()
 wf=Wordftrs()
 
@@ -45,7 +43,7 @@ class Sentenceftrs:
     def posratio(self, sentence):
         '''The number of nouns, verbs, adjectives and adverbs in the sentence, devided by sentence length'''
         tags = sNLP.pos(sentence)
-        cn=0;cv=0;cj=0;cr=0;c=0
+        cn = 0; cv = 0; cj = 0; cr = 0; c=0
         for tag in tags:
             c+=1
             if tag[1][0]=="N":
