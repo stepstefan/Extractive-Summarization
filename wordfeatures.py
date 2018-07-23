@@ -21,9 +21,16 @@ class Wordftrs:
                 counter += (word == wrd)
         return counter
 
-    def idf(word, slist):
+    def idf(word, claster):
         ''' total document number in the datasets, devided by the frequency of documents which contains the word'''
-        pass
+        counter = 0
+        for slist in claster:
+            for sentence in slist:
+                wlist = [w.lower() for w in  sNLP.word_tokenize(sentence)]
+                if word in wlist:
+                    counter += 1
+                    break
+        return counter
 
     def cf(word, slist):
         ''' the frequency of documents which conntains this word in the current cluster'''

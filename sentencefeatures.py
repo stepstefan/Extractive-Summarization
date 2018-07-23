@@ -30,17 +30,27 @@ class Sentenceftrs:
                 maxd = len(pos)
         return maxd
 
-    def atf(self, sentence):
+    def atf(self, sentence, tf_dic):
         '''The mean TF values of words in the sentence, devided bu sentence length'''   
-        return 0
+        tf_sum = 0 
+        for word in sentence:
+            tf_sum += word[0]
+        return tf_sum / len(sentence)**2
 
-    def aidf(self, sentence):
+    def aidf(self, sentence, idf_dic):
         '''The mean word IDF values in sentence, devided by the sentence lenght'''
-        return 0
+        idf_sum = 0 
+        for word in sentence:
+            idf_sum += word[0]
+        return idf_sum / len(sentence)**2
 
     def acf(self, sentence):
         '''The mean word CF values in sentence, devided by the sentence length'''
-        return 0
+        cf_sum = 0 
+        for word in sentence:
+            cf_sum += word[0]
+        return cf_sum / len(sentence)**2
+        
     
     def posratio(self, sentence):
         '''The number of nouns, verbs, adjectives and adverbs in the sentence, devided by sentence length'''
