@@ -3,6 +3,8 @@ from stanfordcorenlp import StanfordCoreNLP
 from nltk.tree import Tree
 import numpy as np
 from wordfeatures import Wordftrs
+
+
 sNLP = StanfordNLP()
 wf=Wordftrs()
 

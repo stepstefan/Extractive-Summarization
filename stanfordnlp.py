@@ -10,6 +10,7 @@ from nltk.tree import Tree
 import nltk
 from xml.etree import ElementTree
 
+
 class StanfordNLP:
     def __init__(self, host='http://localhost', port=9000):
         self.nlp = StanfordCoreNLP(host, port=port,
@@ -54,4 +55,7 @@ class StanfordNLP:
         return tokens
 
 def read_xml(file_name):
-    return ElementTree.parse(file_name).getroot().find('TEXT').text.strip().replace('\n', '  ')
+    try:
+        return ElementTree.parse(file_name).getroot().find('TEXT').text.strip().replace('\n', ' ')
+    except:
+        print("Couldn't read file:\n {}".format(file_name))
