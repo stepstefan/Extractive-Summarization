@@ -126,6 +126,7 @@ class Wordftrs:
     tf_dic = {}
     idf_dic = {}
     cf_dic = {}
+    slen_dic = {}
 
     def tf(self, slist):
         ''' term frequency '''
@@ -156,80 +157,94 @@ class Wordftrs:
             else:
                 self.cf_dic[word] = 1
 
-    def pos(self, wordtuple):
+    def pos(self, sentence):
         ''' a 4-dimension binary vector indicates whether the word is a noun, a verb, an adjective or an adverb. If the word has another part-of-speech, the vector is all-zero'''
-        if wordtuple[1][0] == "N":
-            feature = np.array([1, 0, 0, 0])
-        elif wordtuple[1][0] == "V":
-            feature = np.array([0, 1, 0, 0])
-        elif wordtuple[1][0] == "J":
-            feature = np.array([0, 0, 1, 0])
-        elif wordtuple[1][0:1] == "RB":
-            feature = np.array([0, 0, 0, 1])
-        else:
-            feature = np.array([0, 0, 0, 0])
+        wlist_tuple = sNLP.pos(sentence)
+        feature_vec = []
+
+        for wordtuple in wlist_tuple:
+            if wordtuple[1][0] == "N":
+                feature = np.array([1, 0, 0, 0])
+            elif wordtuple[1][0] == "V":
+                feature = np.array([0, 1, 0, 0])
+            elif wordtuple[1][0] == "J":
+                feature = np.array([0, 0, 1, 0])
+            elif wordtuple[1][0:1] == "RB":
+                feature = np.array([0, 0, 0, 1])
+            else:
+                feature = np.array([0, 0, 0, 0])
+            feature_vec.append(feature)
         
-        return feature
+        return feature_vec
 
-    def namedentity(self, word):
+    def namedentity(self, sentence):
         ''' a binary value equals one iff the output of named entity classifier from CoreNLP is not entity'''
-        ne = sNLP.ner(word)[0]
-        if ne[1] == "O":
-            feature = 0
-        else:
-            feature = 1
+        feature_vec = []
+        for word in sNLP.word_tokenize(sentence):
+            ne = sNLP.ner(word)[0]
+            if ne[1] == "O":
+                feature = 0
+            else:
+                feature = 1
+            feature_vec.append(feature)
             
-        return feature
+        return feature_vec
 
-    def number(self, wordtuple):
+    def number(self, sentence):
         ''' a binary value denotes if whether the word is a number'''
-        if wordtuple[1] == "CD":
-            feature = 1
-        else:
-            feature = 0
-        return feature
+        wlist_tuple = sNLP.pos(sentence)
+        feature_vec = []
+
+        for wordtuple in wlist_tuple:
+            if wordtuple[1] == "CD":
+                feature = 1
+            else:
+                feature = 0
+            feature_vec.append(feature)
+        return feature_vec
     
-    def slen(self, word, slist):
+    def slen(self, slist):
         '''The maximal length of sentences owning the word'''
-        word = word.lower()
-        maximal = 0
         for sentence in slist:
             wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
-            if (word.lower() in wlist):
-                maximal = max(maximal, len(wlist))
-        return maximal
+            ln = len(wlist)
+            for word in wlist:
+                if not word in self.slen_dic:
+                    self.slen_dic[word] = ln
+                else:
+                    self.slen_dic[word] = max(self.slen_dic[word], ln)
 
-    def stf(self, word, claster, tf_dic):
+    def stf(self, word, claster):
         '''The maximal TF score of sentences owning the word'''
         maximal = 0
         for slist in claster:
             for sentence in slist:
                 wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
                 if word.lower() in wlist:
-                    mx = max([tf_dic[wrd] for wrd in wlist])
+                    mx = max([self.tf_dic[wrd] for wrd in wlist])
                     maximal = max(maximal, mx)
         return maximal
                 
-    def scf(self, word, claster, cf_dic):
+    def scf(self, word, claster):
         '''The maximal CF score of sentences owning the word'''
         maximal = 0
         for slist in claster:
             for sentence in slist:
                 wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
                 if word.lower() in wlist:
-                    mx = max([cf_dic[wrd] for wrd in wlist])
+                    mx = max([self.cf_dic[wrd] for wrd in wlist])
                     maximal = max(maximal, mx)
         return maximal
 
 
-    def sidf(self, word, claster, idf_dic):
+    def sidf(self, word, claster):
         '''The maximal IDF score of sentences owning the word'''
         maximal = 0
         for slist in claster:
             for sentence in slist:
                 wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
                 if word.lower() in wlist:
-                    mx = max([idf_dic[wrd] for wrd in wlist])
+                    mx = max([self.idf_dic[wrd] for wrd in wlist])
                     maximal = max(maximal, mx)
         return maximal
 
@@ -252,5 +267,3 @@ class Wordftrs:
                 dep = sf.depth(sen)
                 maxd = max(maxd, dep)
         return maxd
-
-

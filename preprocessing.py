@@ -1,4 +1,5 @@
 import os
+import time
 from stanfordnlp import StanfordNLP, read_xml
 from features import Sentenceftrs, Wordftrs
 
@@ -16,7 +17,8 @@ if __name__ == '__main__':
 
     data = proba
     c = 0
-
+    
+    start = time.time()
     for cluster in os.listdir(data):
         print('Processing cluster: {}'.format(cluster))
         docs = data + cluster
@@ -31,12 +33,20 @@ if __name__ == '__main__':
             text = read_xml(doc) # <p> tagovi ne rade
             c += 1
 
-            """
-                deo za  racunanje ficera
-            """
-            slist = sNLP.sentances_tokenize(text)
+            ### deo za  racunanje ficera ###
+
+            slist = sNLP.sentences_tokenize(text)
             wF.tf(slist)
             wF.cf(slist)
-        wF.idf(len(os.listdir(docs)))
-            
+            wF.slen(slist)
+            for sentence in slist:
+                _ = wF.pos(sentence) # staviti u tree
+                _ = wF.number(sentence) # staviti u tree
+                _ = wF.namedentity(sentence) # staviti u tree
+
+                
+    end = time.time()        
     print(c)
+    print('Time passed: {} s'.format(int(end - start)))
+    time.sleep(3)
+    print(wF.slen_dic)
