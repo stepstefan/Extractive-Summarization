@@ -199,7 +199,7 @@ class Wordftrs:
                 maximal = max(maximal, len(wlist))
         return maximal
 
-    def stf(word, claster, tf_dic):
+    def stf(self, word, claster, tf_dic):
         '''The maximal TF score of sentences owning the word'''
         maximal = 0
         for slist in claster:
@@ -210,7 +210,7 @@ class Wordftrs:
                     maximal = max(maximal, mx)
         return maximal
                 
-    def scf(word, claster, cf_dic):
+    def scf(self, word, claster, cf_dic):
         '''The maximal CF score of sentences owning the word'''
         maximal = 0
         for slist in claster:
@@ -222,7 +222,7 @@ class Wordftrs:
         return maximal
 
 
-    def sidf(word, claster, idf_dic):
+    def sidf(self, word, claster, idf_dic):
         '''The maximal IDF score of sentences owning the word'''
         maximal = 0
         for slist in claster:
