@@ -29,7 +29,7 @@ class Sentenceftrs:
         cs = 0
         for node in nodes:
             if not type(t[node]) is str:
-                if t[node].label() == "S" or t[node].lable() == "@S":
+                if t[node].label() == "S" or t[node].label() == "@S":
                     cs += 1
 
         return cs
@@ -194,7 +194,7 @@ class Wordftrs:
         maximal = 0
         for sentence in slist:
             wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
-            if (word in wlist):
+            if (word.lower() in wlist):
                 maximal = max(maximal, len(wlist))
         return maximal
 
@@ -204,7 +204,7 @@ class Wordftrs:
         for slist in claster:
             for sentence in slist:
                 wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
-                if word in wlist:
+                if word.lower() in wlist:
                     mx = max([tf_dic[wrd] for wrd in wlist])
                     maximal = max(maximal, mx)
         return maximal
@@ -215,7 +215,7 @@ class Wordftrs:
         for slist in claster:
             for sentence in slist:
                 wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
-                if word in wlist:
+                if word.lower() in wlist:
                     mx = max([cf_dic[wrd] for wrd in wlist])
                     maximal = max(maximal, mx)
         return maximal
@@ -227,7 +227,7 @@ class Wordftrs:
         for slist in claster:
             for sentence in slist:
                 wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
-                if word in wlist:
+                if word.lower() in wlist:
                     mx = max([idf_dic[wrd] for wrd in wlist])
                     maximal = max(maximal, mx)
         return maximal
@@ -237,7 +237,7 @@ class Wordftrs:
         maxs = 0
         for sen in slist:
             wlist = [w.lower() for w in sNLP.word_tokenize(sen)]
-            if word in wlist:
+            if word.lower() in wlist:
                 subcount = sf.subs(sen)
                 maxs = max(maxs, subcount)
         return maxs
@@ -247,7 +247,7 @@ class Wordftrs:
         maxd = 0
         for sen in slist:
             wlist = [w.lower() for w in sNLP.word_tokenize(sen)]
-            if word in wlist:
+            if word.lower() in wlist:
                 dep = sf.depth(sen)
                 maxd = max(maxd, dep)
         return maxd
