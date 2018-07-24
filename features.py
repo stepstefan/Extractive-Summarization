@@ -116,6 +116,7 @@ class Sentenceftrs:
 
 sf = Sentenceftrs()
 
+'''Wordi features ________________________________________________________________________'''
 
 class Wordftrs:
     """
