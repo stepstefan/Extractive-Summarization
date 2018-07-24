@@ -232,7 +232,7 @@ class Wordftrs:
                     maximal = max(maximal, mx)
         return maximal
 
-    def ssubs(word, slist):
+    def ssubs(self, word, slist):
         '''The maximal sub-sentence count of sentences owning the word. A sub-sentence means the node label is S or @S in parsing tree'''
         maxs = 0
         for sen in slist:
