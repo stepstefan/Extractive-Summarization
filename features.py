@@ -132,7 +132,7 @@ class Wordftrs:
                 counter += (word == wrd)
         return counter
 
-    def idf(word, claster):
+    def idf(self, word, claster):
         ''' total document number in the datasets, devided by the frequency of documents which contains the word'''
         counter = 0
         for slist in claster:
@@ -141,11 +141,18 @@ class Wordftrs:
                 if word in wlist:
                     counter += 1
                     break
-        return counter
+        return counter / len(claster)
 
-    def cf(word, slist):
+    def cf(self, word, slist):
         ''' the frequency of documents which conntains this word in the current cluster'''
-        pass
+        counter = 0
+        for slist in claster:
+            for sentence in slist:
+                wlist = [w.lower() for w in  sNLP.word_tokenize(sentence)]
+                if word in wlist:
+                    counter += 1
+                    break
+        return counter
 
     def pos(self, wordtuple):
         ''' a 4-dimension binary vector indicates whether the word is a noun, a verb, an adjective or an adverb. If the word has another part-of-speech, the vector is all-zero'''
@@ -190,17 +197,39 @@ class Wordftrs:
                 maximal = max(maximal, len(wlist))
         return maximal
 
-    def stf(word, slist):
+    def stf(word, claster, tf_dic):
         '''The maximal TF score of sentences owning the word'''
-        pass
-
-    def scf(word, slist):
+        maximal = 0
+        for slist in claster:
+            for sentence in slist:
+                wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
+                if word in wlist:
+                    mx = max([tf_dic[wrd] for wrd in wlist])
+                    maximal = max(maximal, mx)
+        return maximal
+                
+    def scf(word, claster, cf_dic):
         '''The maximal CF score of sentences owning the word'''
-        return 0
+        maximal = 0
+        for slist in claster:
+            for sentence in slist:
+                wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
+                if word in wlist:
+                    mx = max([cf_dic[wrd] for wrd in wlist])
+                    maximal = max(maximal, mx)
+        return maximal
 
-    def sidf(word, slist):
+
+    def sidf(word, claster, idf_dic):
         '''The maximal IDF score of sentences owning the word'''
-        return 0
+        maximal = 0
+        for slist in claster:
+            for sentence in slist:
+                wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
+                if word in wlist:
+                    mx = max([idf_dic[wrd] for wrd in wlist])
+                    maximal = max(maximal, mx)
+        return maximal
 
     def ssubs(word, slist):
         '''The maximal sub-sentence count of sentences owning the word. A sub-sentence means the node label is S or @S in parsing tree'''
