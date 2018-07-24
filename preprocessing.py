@@ -36,6 +36,7 @@ if __name__ == '__main__':
             ### deo za  racunanje ficera ###
 
             slist = sNLP.sentances_tokenize(text)
+
             wF.tf(slist)
             wF.cf(slist)
 
@@ -48,6 +49,14 @@ if __name__ == '__main__':
                 _ = wF.pos(sentence) # staviti u tree
                 _ = wF.number(sentence) # staviti u tree
                 _ = wF.namedentity(sentence) # staviti u tree
+                ### Sentence
+                _ = sF.length(sentence)
+                _ = sF.subs(sentence)
+                _ = sF.depth(sentence)
+
+                _ = sF.atf(sentence, wF.tf_dic)
+                _ = sF.acf(sentence, wF.cf_dic)
+                #_ = sF.aidf(sentence)
 
                 
     end = time.time()        
