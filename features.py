@@ -104,37 +104,41 @@ class Wordftrs:
     word, slist - list of sentences in document
     """
 
-    def tf(self, word, slist):
+    tf_dic = {}
+    idf_dic = {}
+    cf_dic = {}
+
+    def tf(self, slist):
         ''' term frequency '''
-        word = word.lower()
-        counter = 0
         for sentence in slist:
             wlist = [w.lower() for w in  sNLP.word_tokenize(sentence)]
-            for wrd in wlist:
-                counter += (word == wrd)
-        return counter
+            for word in wlist:
+                if word in self.tf_dic:
+                    self.tf_dic[word] += 1
+                else:
+                    self.tf_dic[word] = 1
 
-    def idf(self, word, claster):
+
+    def idf(self, cluster_size):
         ''' total document number in the datasets, devided by the frequency of documents which contains the word'''
-        counter = 0
-        for slist in claster:
-            for sentence in slist:
-                wlist = [w.lower() for w in  sNLP.word_tokenize(sentence)]
-                if word in wlist:
-                    counter += 1
-                    break
-        return counter / len(claster)
+        for key in list(self.cf_dic.keys()):
+            self.idf_dic[key] = cluster_size / self.cf_dic[key]
 
-    def cf(self, word, slist):
+        
+
+    def cf(self, slist):
         ''' the frequency of documents which conntains this word in the current cluster'''
-        counter = 0
-        for slist in claster:
-            for sentence in slist:
-                wlist = [w.lower() for w in  sNLP.word_tokenize(sentence)]
-                if word in wlist:
-                    counter += 1
-                    break
-        return counter
+        wlist = []
+        for sentence in slist:
+            for w in sNLP.word_tokenize(sentence):
+                wlist.append(w.lower())
+
+        wset = set(wlist)
+        for word in wset:
+            if word in self.cf_dic:
+                self.cf_dic[word] += 1
+            else:
+                self.cf_dic[word] = 1
 
     def pos(self, wordtuple):
         ''' a 4-dimension binary vector indicates whether the word is a noun, a verb, an adjective or an adverb. If the word has another part-of-speech, the vector is all-zero'''
