@@ -35,10 +35,15 @@ if __name__ == '__main__':
 
             ### deo za  racunanje ficera ###
 
-            slist = sNLP.sentences_tokenize(text)
+            slist = sNLP.sentances_tokenize(text)
             wF.tf(slist)
             wF.cf(slist)
+
             wF.slen(slist)
+
+            wF.stf(slist)
+            wF.scf(slist)
+
             for sentence in slist:
                 _ = wF.pos(sentence) # staviti u tree
                 _ = wF.number(sentence) # staviti u tree
@@ -48,5 +53,3 @@ if __name__ == '__main__':
     end = time.time()        
     print(c)
     print('Time passed: {} s'.format(int(end - start)))
-    time.sleep(3)
-    print(wF.slen_dic)

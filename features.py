@@ -126,7 +126,12 @@ class Wordftrs:
     tf_dic = {}
     idf_dic = {}
     cf_dic = {}
+
     slen_dic = {}
+
+    stf_dic = {}
+    sidf_dic = {}
+    scf_dic = {}
 
     def tf(self, slist):
         ''' term frequency '''
@@ -214,39 +219,51 @@ class Wordftrs:
                 else:
                     self.slen_dic[word] = max(self.slen_dic[word], ln)
 
-    def stf(self, word, claster):
+    def stf(self, slist):
         '''The maximal TF score of sentences owning the word'''
-        maximal = 0
-        for slist in claster:
-            for sentence in slist:
-                wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
-                if word.lower() in wlist:
-                    mx = max([self.tf_dic[wrd] for wrd in wlist])
-                    maximal = max(maximal, mx)
-        return maximal
-                
-    def scf(self, word, claster):
+        maxes = []  
+        for sentence in slist:
+            wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
+            maxes.append(max([self.tf_dic[wrd] for wrd in wlist]))
+
+        for idx, sentence in enumerate(slist):
+            wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
+            for word in wlist:
+                if not word in self.stf_dic:
+                    self.stf_dic[word] = maxes[idx]
+                else:
+                    self.stf_dic[word] = max(self.stf_dic[word], maxes[idx])
+
+    def scf(self, slist):
         '''The maximal CF score of sentences owning the word'''
-        maximal = 0
-        for slist in claster:
-            for sentence in slist:
-                wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
-                if word.lower() in wlist:
-                    mx = max([self.cf_dic[wrd] for wrd in wlist])
-                    maximal = max(maximal, mx)
-        return maximal
+        maxes = []  
+        for sentence in slist:
+            wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
+            maxes.append(max([self.cf_dic[wrd] for wrd in wlist]))
+
+        for idx, sentence in enumerate(slist):
+            wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
+            for word in wlist:
+                if not word in self.scf_dic:
+                    self.scf_dic[word] = maxes[idx]
+                else:
+                    self.scf_dic[word] = max(self.scf_dic[word], maxes[idx])
 
 
-    def sidf(self, word, claster):
+    def sidf(self, slist):
         '''The maximal IDF score of sentences owning the word'''
-        maximal = 0
-        for slist in claster:
-            for sentence in slist:
-                wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
-                if word.lower() in wlist:
-                    mx = max([self.idf_dic[wrd] for wrd in wlist])
-                    maximal = max(maximal, mx)
-        return maximal
+        maxes = []  
+        for sentence in slist:
+            wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
+            maxes.append(max([self.idf_dic[wrd] for wrd in wlist]))
+
+        for idx, sentence in enumerate(slist):
+            wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
+            for word in wlist:
+                if not word in self.sidf_dic:
+                    self.sidf_dic[word] = maxes[idx]
+                else:
+                    self.sidf_dic[word] = max(self.sidf_dic[word], maxes[idx])
 
     def ssubs(self, word, slist):
         '''The maximal sub-sentence count of sentences owning the word. A sub-sentence means the node label is S or @S in parsing tree'''
