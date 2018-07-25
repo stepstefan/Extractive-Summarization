@@ -54,6 +54,7 @@ if __name__ == '__main__':
             for sentence in slist:
                 tree = sNLP.parse(sentence)
                 pos = sNLP.pos(sentence)
+                wlist = [x.lower() for x in sNLP.word_tokenize(sentence)]
 
                 _ = wF.pos(sentence) # staviti u tree
                 _ = wF.number(sentence) # staviti u tree
@@ -61,8 +62,8 @@ if __name__ == '__main__':
                 ### Sentence
                 _ = sF.position(sentence, slist)
                 _ = sF.length(sentence)
-                _ = sF.subs(tree)
-                _ = sF.depth(tree)
+                subs = sF.subs(tree)
+                depth = sF.depth(tree)
 
                 _ = sF.atf(sentence, wF.tf_dic)
                 _ = sF.acf(sentence, wF.cf_dic)
@@ -71,6 +72,11 @@ if __name__ == '__main__':
                 _ = sF.posratio(pos)
                 _ = sF.neration(pos)
                 _ = sF.numberratio(pos)
+
+                # Word
+                wF.update_ss(wlist, subs)
+                wF.update_sd(wlist, depth)
+                
                 
     end = time.time()        
     print(c)

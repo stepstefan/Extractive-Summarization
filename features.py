@@ -135,6 +135,9 @@ class Wordftrs:
     sidf_dic = {}
     scf_dic = {}
 
+    ss_dic = {}
+    sd_dic = {}
+
     def tf(self, slist):
         """ term frequency """ 
         for wlist in slist:
@@ -267,22 +270,20 @@ class Wordftrs:
                 else:
                     self.sidf_dic[word] = max(self.sidf_dic[word], maxes[idx])
 
-    def ssubs(self, word, swlist):
+    def update_ss(self, wlist, subs):
         """The maximal sub-sentence count of sentences owning the word. A sub-sentence means the node label is S or @S in parsing tree"""
-        maxs = 0
-        for wlist in swlist:
-            #wlist = [w.lower() for w in sNLP.word_tokenize(sen)]
-            if word.lower() in wlist:
-                subcount = sf.subs(sen)
-                maxs = max(maxs, subcount)
-        return maxs
+        for word in wlist:
+            if not word in self.ss_dic:
+                self.ss_dic[word] = subs
+            else:
+                self.ss_dic[word] = max(
+                        self.ss_dic[word], subs)
 
-    def sdepth(self, word, slist):
+    def update_sd(self, wlist, depth):
         """The maximal parsing tree depth of sentences owning the word"""
-        maxd = 0
-        for sen in slist:
-            wlist = [w.lower() for w in sNLP.word_tokenize(sen)]
-            if word.lower() in wlist:
-                dep = sf.depth(sen)
-                maxd = max(maxd, dep)
-        return maxd
+        for word in wlist:
+            if not word in self.sd_dic:
+                self.sd_dic[word] = depth
+            else:
+                self.sd_dic[word] = max(
+                        self.sd_dic[word], depth)
