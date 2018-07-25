@@ -7,6 +7,9 @@ sNLP = StanfordNLP()
 wF = Wordftrs()
 sF = Sentenceftrs()
 
+def lower_array(a):
+    return [x.lower() for x in a]
+
 
 if __name__ == '__main__':
     data1 = u'../baze/DUC2001_Summarization_Documents/docs/'  
@@ -36,28 +39,38 @@ if __name__ == '__main__':
             ### deo za  racunanje ficera ###
 
             slist = sNLP.sentances_tokenize(text)
+            swlist = [sNLP.word_tokenize(x) for x in slist]
+            swlist = list(map(lower_array, swlist))
 
-            wF.tf(slist)
-            wF.cf(slist)
+            wF.tf(swlist)
+            wF.cf(swlist)
+            #print(wF.cf_dic)
 
             wF.slen(slist)
 
-            wF.stf(slist)
-            wF.scf(slist)
+            wF.stf(swlist)
+            wF.scf(swlist)
 
             for sentence in slist:
+                tree = sNLP.parse(sentence)
+                pos = sNLP.pos(sentence)
+
                 _ = wF.pos(sentence) # staviti u tree
                 _ = wF.number(sentence) # staviti u tree
                 _ = wF.namedentity(sentence) # staviti u tree
                 ### Sentence
+                _ = sF.position(sentence, slist)
                 _ = sF.length(sentence)
-                _ = sF.subs(sentence)
-                _ = sF.depth(sentence)
+                _ = sF.subs(tree)
+                _ = sF.depth(tree)
 
                 _ = sF.atf(sentence, wF.tf_dic)
                 _ = sF.acf(sentence, wF.cf_dic)
                 #_ = sF.aidf(sentence)
 
+                _ = sF.posratio(pos)
+                _ = sF.neration(pos)
+                _ = sF.numberratio(pos)
                 
     end = time.time()        
     print(c)

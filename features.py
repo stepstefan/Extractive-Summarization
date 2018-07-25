@@ -21,21 +21,21 @@ class Sentenceftrs:
     def length(self, sentence):
         return len(sentence)
 
-    def subs(self, sentence):
+    def subs(self, tree):
         """Sub-sentence count in parsing tree"""
-        t = sNLP.parse(sentence)
-        nodes = t.treepositions()
+        #t = sNLP.parse(sentence)
+        nodes = tree.treepositions()
         cs = 0
         for node in nodes:
-            if not type(t[node]) is str:
-                if t[node].label() == "S" or t[node].label() == "@S":
+            if not type(tree[node]) is str:
+                if tree[node].label() == "S" or tree[node].label() == "@S":
                     cs += 1
 
         return cs
 
-    def depth(self, sentence):
+    def depth(self, tree):
         """The root depth of the parsing tree"""
-        tree = sNLP.parse(sentence)
+        #tree = sNLP.parse(sentence)
         maxd = 0
         for pos in tree.treepositions():
             if len(pos) > maxd:
@@ -66,9 +66,9 @@ class Sentenceftrs:
             cf_sum += cf_dic[word]
         return cf_sum / len(sentence)**2
         
-    def posratio(self, sentence):
+    def posratio(self, tags):
         """The number of nouns, verbs, adjectives and adverbs in the sentence, devided by sentence length"""
-        tags = sNLP.pos(sentence)
+        #tags = sNLP.pos(sentence)
         cn = 0
         cv = 0
         cj = 0
@@ -87,9 +87,9 @@ class Sentenceftrs:
             feature = np.array([cn/c, cv/c, cj/c, cr/c])
         return feature
 
-    def neration(self, sentence):
+    def neration(self, tags):
         """The number of named enitites, devided by sentence length"""
-        tags = sNLP.ner(sentence)
+        #tags = sNLP.ner(sentence)
         c1 = 0
         c2 = 0
         for tag in tags:
@@ -99,9 +99,9 @@ class Sentenceftrs:
 
         return c2/c1
     
-    def numberratio(self, sentence):
+    def numberratio(self, tags):
         """The number of digits, devided by sentence length"""
-        tags = sNLP.pos(sentence)
+        #tags = sNLP.pos(sentence)
         c1 = 0
         c2 = 0
         for tag in tags:
@@ -113,7 +113,7 @@ class Sentenceftrs:
     
     def stopratio(self, sentence):
         """The number of stopwords, devided by sentence length. Use stopword list of ROUGE"""
-        return 0
+        pass
 
 
 sf = Sentenceftrs()
@@ -137,8 +137,8 @@ class Wordftrs:
 
     def tf(self, slist):
         """ term frequency """ 
-        for sentence in slist:
-            wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
+        for wlist in slist:
+            #wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
             for word in wlist:
                 if word in self.tf_dic:
                     self.tf_dic[word] += 1
@@ -152,12 +152,12 @@ class Wordftrs:
 
     def cf(self, slist):
         """ the frequency of documents which conntains this word in the current cluster"""
-        wlist = []
-        for sentence in slist:
-            for w in sNLP.word_tokenize(sentence):
-                wlist.append(w.lower())
+        words = []
+        for wlist in slist:
+            for w in wlist:
+                words.append(w.lower())
 
-        wset = set(wlist)
+        wset = set(words)
         for word in wset:
             if word in self.cf_dic:
                 self.cf_dic[word] += 1
@@ -224,27 +224,27 @@ class Wordftrs:
     def stf(self, slist):
         """The maximal TF score of sentences owning the word"""
         maxes = []  
-        for sentence in slist:
-            wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
+        for wlist in slist:
+            #wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
             maxes.append(max([self.tf_dic[wrd] for wrd in wlist]))
 
-        for idx, sentence in enumerate(slist):
-            wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
+        for idx, wlist in enumerate(slist):
+            #wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
             for word in wlist:
                 if not word in self.stf_dic:
                     self.stf_dic[word] = maxes[idx]
                 else:
                     self.stf_dic[word] = max(self.stf_dic[word], maxes[idx])
 
-    def scf(self, slist):
+    def scf(self, swlist):
         """The maximal CF score of sentences owning the word"""
         maxes = []  
-        for sentence in slist:
-            wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
+        for wlist in swlist:
+            #wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
             maxes.append(max([self.cf_dic[wrd] for wrd in wlist]))
 
-        for idx, sentence in enumerate(slist):
-            wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
+        for idx, wlist in enumerate(swlist):
+            #wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
             for word in wlist:
                 if not word in self.scf_dic:
                     self.scf_dic[word] = maxes[idx]
@@ -252,26 +252,26 @@ class Wordftrs:
                     self.scf_dic[word] = max(self.scf_dic[word], maxes[idx])
 
 
-    def sidf(self, slist):
+    def sidf(self, swlist):
         """The maximal IDF score of sentences owning the word"""
         maxes = []  
-        for sentence in slist:
-            wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
+        for wlist in swlist:
+            #wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
             maxes.append(max([self.idf_dic[wrd] for wrd in wlist]))
 
-        for idx, sentence in enumerate(slist):
-            wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
+        for idx, wlist in enumerate(swlist):
+            #wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
             for word in wlist:
                 if not word in self.sidf_dic:
                     self.sidf_dic[word] = maxes[idx]
                 else:
                     self.sidf_dic[word] = max(self.sidf_dic[word], maxes[idx])
 
-    def ssubs(self, word, slist):
+    def ssubs(self, word, swlist):
         """The maximal sub-sentence count of sentences owning the word. A sub-sentence means the node label is S or @S in parsing tree"""
         maxs = 0
-        for sen in slist:
-            wlist = [w.lower() for w in sNLP.word_tokenize(sen)]
+        for wlist in swlist:
+            #wlist = [w.lower() for w in sNLP.word_tokenize(sen)]
             if word.lower() in wlist:
                 subcount = sf.subs(sen)
                 maxs = max(maxs, subcount)
