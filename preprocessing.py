@@ -1,10 +1,15 @@
 import os
 import time
+import json
 from stanfordnlp import StanfordNLP, read_xml
 from features import Sentenceftrs, Wordftrs
 
+
+with open('./duc2002.json', 'r') as f:
+    idf_dic = json.load(f)
+
 sNLP = StanfordNLP()
-wF = Wordftrs()
+wF = Wordftrs(idf_dic)
 sF = Sentenceftrs()
 
 def lower_array(a):
@@ -33,7 +38,7 @@ if __name__ == '__main__':
             if doc_name[0:4] == 'FBIS':
                 continue
 
-            text = read_xml(doc) # <p> tagovi ne rade
+            text = read_xml(doc)
             c += 1
 
             ### deo za  racunanje ficera ###
@@ -44,7 +49,6 @@ if __name__ == '__main__':
 
             wF.tf(swlist)
             wF.cf(swlist)
-            #print(wF.cf_dic)
 
             wF.slen(slist)
 
@@ -67,7 +71,7 @@ if __name__ == '__main__':
 
                 _ = sF.atf(sentence, wF.tf_dic)
                 _ = sF.acf(sentence, wF.cf_dic)
-                #_ = sF.aidf(sentence)
+                _ = sF.aidf(sentence, wF.idf_dic)
 
                 _ = sF.posratio(pos)
                 _ = sF.neration(pos)

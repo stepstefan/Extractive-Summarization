@@ -124,19 +124,19 @@ class Wordftrs:
     """
     word, slist - list of sentences in document
     """
+    def __init__(self, idf_dic):
+        self.tf_dic = {}
+        self.cf_dic = {}
+        self.idf_dic = idf_dic
 
-    tf_dic = {}
-    idf_dic = {}
-    cf_dic = {}
+        self.slen_dic = {}
 
-    slen_dic = {}
+        self.stf_dic = {}
+        self.sidf_dic = {}
+        self.scf_dic = {}
 
-    stf_dic = {}
-    sidf_dic = {}
-    scf_dic = {}
-
-    ss_dic = {}
-    sd_dic = {}
+        self.ss_dic = {}
+        self.sd_dic = {}
 
     def tf(self, slist):
         """ term frequency """ 
@@ -150,8 +150,7 @@ class Wordftrs:
 
     def idf(self, cluster_size):
         """ total document number in the datasets, devided by the frequency of documents which contains the word"""
-        for key in list(self.cf_dic.keys()):
-            self.idf_dic[key] = cluster_size / self.cf_dic[key]
+        pass
 
     def cf(self, slist):
         """ the frequency of documents which conntains this word in the current cluster"""
