@@ -16,9 +16,10 @@ class StanfordNLP:
         self.nlp = StanfordCoreNLP(host, port=port,
                                    timeout=30000)  # , quiet=False, logging_level=logging.DEBUG)
         self.props = {
-            'annotators': 'tokenize,ssplit,pos,lemma,ner,parse,depparse,dcoref,relation',
+            'annotators': 'tokenize,ssplit,pos,lemma,ner,parse,parse.binaryTrees,depparse,dcoref,relation',
             'pipelineLanguage': 'en',
-            'outputFormat': 'json'
+            'outputFormat': 'json',
+            'parse.binaryTrees': "true"
         }
 
     def word_tokenize(self, sentence):
