@@ -2,7 +2,7 @@ import numpy as np
 
 
 class Node:
-    '''Node of the tree'''
+    """Node of the tree"""
     def __init__(self):
         self.left = None
         self.right = None
