@@ -124,16 +124,19 @@ class Wordftrs:
     """
     word, slist - list of sentences in document
     """
+    def __init__(self, idf_dic):
+        self.tf_dic = {}
+        self.cf_dic = {}
+        self.idf_dic = idf_dic
 
-    tf_dic = {}
-    idf_dic = {}
-    cf_dic = {}
+        self.slen_dic = {}
 
-    slen_dic = {}
+        self.stf_dic = {}
+        self.sidf_dic = {}
+        self.scf_dic = {}
 
-    stf_dic = {}
-    sidf_dic = {}
-    scf_dic = {}
+        self.ss_dic = {}
+        self.sd_dic = {}
 
     def tf(self, slist):
         """ term frequency """ 
@@ -147,8 +150,7 @@ class Wordftrs:
 
     def idf(self, cluster_size):
         """ total document number in the datasets, devided by the frequency of documents which contains the word"""
-        for key in list(self.cf_dic.keys()):
-            self.idf_dic[key] = cluster_size / self.cf_dic[key]
+        pass
 
     def cf(self, slist):
         """ the frequency of documents which conntains this word in the current cluster"""
@@ -267,22 +269,20 @@ class Wordftrs:
                 else:
                     self.sidf_dic[word] = max(self.sidf_dic[word], maxes[idx])
 
-    def ssubs(self, word, swlist):
+    def update_ss(self, wlist, subs):
         """The maximal sub-sentence count of sentences owning the word. A sub-sentence means the node label is S or @S in parsing tree"""
-        maxs = 0
-        for wlist in swlist:
-            #wlist = [w.lower() for w in sNLP.word_tokenize(sen)]
-            if word.lower() in wlist:
-                subcount = sf.subs(sen)
-                maxs = max(maxs, subcount)
-        return maxs
+        for word in wlist:
+            if not word in self.ss_dic:
+                self.ss_dic[word] = subs
+            else:
+                self.ss_dic[word] = max(
+                        self.ss_dic[word], subs)
 
-    def sdepth(self, word, slist):
+    def update_sd(self, wlist, depth):
         """The maximal parsing tree depth of sentences owning the word"""
-        maxd = 0
-        for sen in slist:
-            wlist = [w.lower() for w in sNLP.word_tokenize(sen)]
-            if word.lower() in wlist:
-                dep = sf.depth(sen)
-                maxd = max(maxd, dep)
-        return maxd
+        for word in wlist:
+            if not word in self.sd_dic:
+                self.sd_dic[word] = depth
+            else:
+                self.sd_dic[word] = max(
+                        self.sd_dic[word], depth)

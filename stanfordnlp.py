@@ -57,6 +57,14 @@ class StanfordNLP:
 
 def read_xml(file_name):
     try:
-        return ElementTree.parse(file_name).getroot().find('TEXT').text.strip().replace('\n', ' ')
+        tree = ElementTree.parse(file_name).getroot().find('TEXT')
+        if file_name[0:2] == 'LA':
+            txt = ''
+            for p in  tree.getchildren():
+                txt += p.text.strip().replace('\n', ' ')
+            return txt
+        else:
+            return tree.text.strip().replace('\n', ' ')
     except:
         print("Couldn't read file:\n {}".format(file_name))
+        return []
