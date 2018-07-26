@@ -10,6 +10,8 @@ sNLP = StanfordNLP()
 
 
 class Sentenceftrs:
+    def __init__(self, stopwords):
+        self.stopwords = stopwords
     def position(self, sentence, slist):
         """The position of the sentences. Suppose there are M sentences in the document, for th ith sentence, the position feature is computed as 1-(i-1)/(M-1)"""
         ith = slist.index(sentence) + 1
@@ -111,12 +113,12 @@ class Sentenceftrs:
 
         return c2/c1
     
-    def stopratio(self, sentence):
+    def stopratio(self, wlist):
         """The number of stopwords, devided by sentence length. Use stopword list of ROUGE"""
-        pass
-
-
-sf = Sentenceftrs()
+        counter = 0
+        for word in wlist:
+            counter += word in self.stopwords
+        return counter
 
 """Wordi features ________________________________________________________________________"""
 
