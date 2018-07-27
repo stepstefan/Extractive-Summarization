@@ -1,8 +1,11 @@
 import os
 import time
+import numpy as np
 import json
 from stanfordnlp import StanfordNLP, read_xml
 from features import Sentenceftrs, Wordftrs
+from tree import *
+from nltk.tree import Tree
 
 
 with open('./duc2002.json', 'r') as f:
@@ -18,13 +21,22 @@ sF = Sentenceftrs(stopwords)
 def lower_array(a):
     return [x.lower() for x in a]
 
+def read_trees(file_path):
+    trees = []
+    with open(file_path) as f:
+        trees.append(Stree(Tree.fromstring(
+            f.readline())).correct())
+    return trees
+
+
 
 if __name__ == '__main__':
     data1 = u'../baze/DUC2001_Summarization_Documents/docs/'  
     data2 = u'../baze/DUC2002_Summarization_Documents/docs/'  
     data3 = u'../baze/DUC2004_Summarization_Documents/docs/'  
 
-    proba = u'./probna_baza/'
+    proba = u'./docs/'
+    trees_dic = u'./trees/'
 
     data = proba
     
@@ -32,6 +44,7 @@ if __name__ == '__main__':
     for cluster in os.listdir(data):
         print('Processing cluster: {}'.format(cluster))
         docs = data + cluster
+        trees_cluster = trees_dic + cluster
 
         for doc_name in os.listdir(docs):
             doc = docs + '/' + doc_name 
@@ -41,6 +54,7 @@ if __name__ == '__main__':
                 continue
 
             text = read_xml(doc)
+            trees = read_trees(trees_cluster + '/' + doc_name)
 
             ### deo za  racunanje ficera ###
 
@@ -51,12 +65,15 @@ if __name__ == '__main__':
             wF.tf(swlist)
             wF.cf(swlist)
 
-            wF.slen(slist)
+            wF.slen(swlist)
 
             wF.stf(swlist)
             wF.scf(swlist)
 
-            for sentence in slist:
+            #wF.update_ss(trees)
+            #wF.update_sd(trees)
+
+            for idx, sentence in enumerate(slist):
                 tree = sNLP.parse(sentence)
                 pos = sNLP.pos(sentence)
                 wlist = [x.lower() for x in sNLP.word_tokenize(sentence)]
@@ -67,8 +84,8 @@ if __name__ == '__main__':
                 ### Sentence
                 _ = sF.position(sentence, slist)
                 _ = sF.length(sentence)
-                subs = sF.subs(tree)
-                depth = sF.depth(tree)
+                #subs = sF.subs(tree)
+                #depth = sF.depth(tree)
 
                 _ = sF.atf(sentence, wF.tf_dic)
                 _ = sF.acf(sentence, wF.cf_dic)
@@ -80,8 +97,6 @@ if __name__ == '__main__':
                 _ = sF.stopratio(wlist)
 
                 # Word
-                wF.update_ss(wlist, subs)
-                wF.update_sd(wlist, depth)
                 
                 
     end = time.time()        
