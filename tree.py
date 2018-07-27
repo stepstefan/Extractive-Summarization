@@ -1,5 +1,8 @@
 import numpy as np
 from nltk.tree import Tree
+from rouge import Rouge
+
+rouge = Rouge()
 
 def replace(node1, node2):
     node1.label = node2.label
@@ -11,6 +14,7 @@ def replace(node1, node2):
     node1.feature = node2.feature
     node1.isPreTerminal = node2.isPreTerminal
     node1.isTerminal = node2.isTerminal
+
 
 class Node:
     """Node of the tree"""
@@ -53,21 +57,90 @@ class Node:
             self.start = self.right.start
             self.end = self.right.end
 
+    def depth(self):
+        """Depth of tree at node level"""
+
+        if self.isTerminal:
+            return 1
+        else:
+            if self.right is None:
+                return 1 + self.left.depth()
+            else:
+                return 1 + max(self.left.depth(), self.right.depth())
+
+    def subs(self):
+        """Sub-sentence count at node level"""
+        # print(self.label)
+        if self.label == 'S' or self.label == '@S':
+            print(self.label)
+            if self.right is None:
+                return 1 + self.left.subs()
+            else:
+                return 1 + self.left.subs() + self.right.subs()
+        else:
+            if self.left is None:
+                return 0
+            else:
+                if self.right is None:
+                    return self.left.subs()
+                else:
+                    return self.left.subs() + self.right.subs()
 
     def correct(self): 
         """Apply tree corrections at node level"""
         
         # Problem with multiple continous nodes with one child that are not pre-terminal
         if self.label != "ROOT" and self.isPreTerminal is not True:
-            print(self.label)
             if self.right is None:
                 self.left.correct()
-                print("Redirect ", self.label, " to ", self.left.label)
                 replace(self, self.left)
             else:
                 self.left.correct()
                 self.right.correct()
 
+    def getTerminals(self):
+        """Terminal nodes"""
+
+        if self.isTerminal is True:
+            return [self]
+        else:
+            if self.right is None:
+                return self.left.getTerminals()
+            else:
+                terminals = self.left.getTerminals() + self.right.getTerminals()
+                return terminals
+    
+    def addFeatures(self, features):
+        """Adding raw features"""
+
+        terminals = self.getTerminals()
+        length = len(terminals)
+        if length != len(features):
+            print("Mladene nesto si zajebao!")
+        else:
+            for i in range(length):
+                terminals[i].feature = features[i]
+
+    def addSalience(self, wordlist, reference, alpha):
+        """Add salience scores on node level"""
+
+        if alpha > 1:
+            print("Alpha must be less than or equal 1!")
+        else:
+            if self.isPreTerminal:
+                word = wordlist[self.start]
+                if word != ".":
+                    self.salience = rouge.get_scores(wordlist[self.start], reference)[0]["rouge-1"]["r"]
+                else:
+                    self.salience = 0
+            else:
+
+                scores = rouge.get_scores('  '.join(wordlist[self.start:self.end+1]), reference)
+                self.salience = scores[0]["rouge-1"]["r"]*alpha + scores[0]["rouge-2"]["r"]*(1-alpha)
+                if self.left is not None:
+                    self.left.addSalience(wordlist, reference, alpha)
+                if self.right is not None:
+                    self.right.addSalience(wordlist, reference, alpha)
 
 
 
@@ -83,5 +156,27 @@ class Stree:
         
         self.root.left.correct()
             
-       
-        
+    def getTerminals(self):
+        """Get termminal nodes of the tree"""
+
+        return self.root.getTerminals()
+
+    def addFeatures(self, features):
+        """Adding raw features ad word and sentance level"""
+
+        self.root.addFeatures(features)
+
+    def addSalience(self, reference, alpha):
+        """Adding Salience scores based on reference summaries"""
+
+        self.root.addSalience(self.wordlist, reference, alpha)
+
+    def depth(self):
+        """Depth of tree"""
+
+        return self.root.depth()
+
+    def subs(self):
+        """Sub-sentence couunt"""
+
+        return self.root.subs()
