@@ -56,15 +56,30 @@ class StanfordNLP:
         return tokens
 
 def read_xml(file_name):
-    try:
-        tree = ElementTree.parse(file_name).getroot().find('TEXT')
-        if tree.getchildren():
-            txt = ''
-            for p in  tree.getchildren():
-                txt += p.text.strip().replace('\n', ' ')
-            return txt
-        else:
-            return tree.text.strip().replace('\n', ' ')
-    except:
-        print("Couldn't read file:\n {}".format(file_name))
+    name = file_name.split('/')[-1]
+    if name[0:4] == 'FBIS':
+        return []
+    txt = ''
+    tree = ElementTree.parse(file_name).getroot()
+    if name[0:4] == 'SJMN':
+        if not tree.find('LEADPARA') is None:
+            txt += tree.find('LEADPARA').text.strip().replace(';', ' ').replace('\n', ' ')
+            txt += ' '
+        txt += tree.find('TEXT').text.strip().replace(';', ' ').replace('\n', ' ')
+        return txt
+    elif name[0:3] == 'WSJ':
+        if not tree.find('LP') is None:
+            txt += tree.find('LP').text.strip().replace('\n', ' ')
+            txt += ' '
+        txt += tree.find('TEXT').text.strip().replace('\n', ' ')
+        return txt
+    elif name[0:2] == 'AP':
+        txt += tree.find('TEXT').text.strip().replace('\n', ' ')
+        return txt
+    elif name[0:2] == 'LA' or name[0:2] == 'FT':
+        for p in tree.find('TEXT').getchildren():
+            txt += p.text.strip().replace('\n', ' ')
+            txt += ' '
+        return txt
+    else:
         return []
