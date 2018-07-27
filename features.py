@@ -35,7 +35,7 @@ class Sentenceftrs:
 
         return cs
 
-    def depth(self, tree):
+    def depth(self, stree):
         """The root depth of the parsing tree"""
         #tree = sNLP.parse(sentence)
         maxd = 0
@@ -214,10 +214,10 @@ class Wordftrs:
             feature_vec.append(feature)
         return feature_vec
     
-    def slen(self, slist):
+    def slen(self, swlist):
         """The maximal length of sentences owning the word"""
-        for sentence in slist:
-            wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
+        for wlist in swlist:
+            #wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
             ln = len(wlist)
             for word in wlist:
                 if not word in self.slen_dic:
@@ -271,20 +271,24 @@ class Wordftrs:
                 else:
                     self.sidf_dic[word] = max(self.sidf_dic[word], maxes[idx])
 
-    def update_ss(self, wlist, subs):
+    def update_ss(self, tlist):
         """The maximal sub-sentence count of sentences owning the word. A sub-sentence means the node label is S or @S in parsing tree"""
-        for word in wlist:
-            if not word in self.ss_dic:
-                self.ss_dic[word] = subs
-            else:
-                self.ss_dic[word] = max(
+        for tree in tlist:
+            subs = tlist.subs()
+            for word in tree.wordlist():
+                if not word in self.ss_dic:
+                    self.ss_dic[word] = subs
+                else:
+                    self.ss_dic[word] = max(
                         self.ss_dic[word], subs)
 
     def update_sd(self, wlist, depth):
         """The maximal parsing tree depth of sentences owning the word"""
-        for word in wlist:
-            if not word in self.sd_dic:
-                self.sd_dic[word] = depth
-            else:
-                self.sd_dic[word] = max(
-                        self.sd_dic[word], depth)
+        for tree in tlist:
+            subs = tlist.depth()
+            for word in tree.wordlist():
+                if not word in self.ss_dic:
+                    self.ss_dic[word] = depth
+                else:
+                    self.ss_dic[word] = max(
+                        self.ss_dic[word], depth)
