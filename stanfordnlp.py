@@ -58,7 +58,7 @@ class StanfordNLP:
 def read_xml(file_name):
     try:
         tree = ElementTree.parse(file_name).getroot().find('TEXT')
-        if file_name[0:2] == 'LA':
+        if tree.getchildren():
             txt = ''
             for p in  tree.getchildren():
                 txt += p.text.strip().replace('\n', ' ')

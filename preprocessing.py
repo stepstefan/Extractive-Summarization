@@ -8,9 +8,12 @@ from features import Sentenceftrs, Wordftrs
 with open('./duc2002.json', 'r') as f:
     idf_dic = json.load(f)
 
+with open('rouge_155.txt') as f:
+    stopwords = [w.strip() for w in f.readlines()]
+
 sNLP = StanfordNLP()
 wF = Wordftrs(idf_dic)
-sF = Sentenceftrs()
+sF = Sentenceftrs(stopwords)
 
 def lower_array(a):
     return [x.lower() for x in a]
@@ -24,7 +27,6 @@ if __name__ == '__main__':
     proba = u'./probna_baza/'
 
     data = proba
-    c = 0
     
     start = time.time()
     for cluster in os.listdir(data):
@@ -39,7 +41,6 @@ if __name__ == '__main__':
                 continue
 
             text = read_xml(doc)
-            c += 1
 
             ### deo za  racunanje ficera ###
 
@@ -76,6 +77,7 @@ if __name__ == '__main__':
                 _ = sF.posratio(pos)
                 _ = sF.neration(pos)
                 _ = sF.numberratio(pos)
+                _ = sF.stopratio(wlist)
 
                 # Word
                 wF.update_ss(wlist, subs)
@@ -83,5 +85,4 @@ if __name__ == '__main__':
                 
                 
     end = time.time()        
-    print(c)
     print('Time passed: {} s'.format(int(end - start)))
