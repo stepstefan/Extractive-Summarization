@@ -4,6 +4,7 @@ from rouge import Rouge
 
 rouge = Rouge()
 
+
 def replace(node1, node2):
     node1.label = node2.label
     node1.left = node2.left
