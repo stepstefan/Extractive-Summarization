@@ -43,7 +43,7 @@ if __name__ == '__main__':
     start = time.time()
     for cluster in os.listdir(data):
         print('Processing cluster: {}'.format(cluster))
-        docs = data + cluster
+        #docs = data + cluster
         trees_cluster = trees_dic + cluster
 
         for doc_name in os.listdir(docs):
