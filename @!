@@ -143,12 +143,12 @@ class Node:
                     self.right.addSalience(wordlist, reference, alpha)
 
     def traverse(self, function, args):
-        """Left traverse tree at node level with function"""
+        """Left traverse tree at node level"""
 
-        if self.left is not None:
-            self.left.traverse(function, args)
-        if self.right is not None:
-            self.right.traverse(function, args)
+        if self is None:
+            return 
+        self.left.traverse(function, args)
+        self.right.traverse(function, args)
         function(self, args)
 
 
@@ -193,7 +193,3 @@ class Stree:
         """Left traverse tree with funnction"""
 
         self.root.traverse(function, args)
-
-
-def printnode(node, args=None):
-    print(node.label)
