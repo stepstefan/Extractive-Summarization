@@ -73,7 +73,7 @@ class Node:
         """Sub-sentence count at node level"""
         # print(self.label)
         if self.label == 'S' or self.label == '@S':
-            print(self.label)
+            #print(self.label)
             if self.right is None:
                 return 1 + self.left.subs()
             else:

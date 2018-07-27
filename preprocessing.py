@@ -1,6 +1,7 @@
 import os
 import time
 import numpy as np
+import pickle
 import json
 from stanfordnlp import StanfordNLP, read_xml
 from features import Sentenceftrs, Wordftrs
@@ -18,49 +19,51 @@ sNLP = StanfordNLP()
 wF = Wordftrs(idf_dic)
 sF = Sentenceftrs(stopwords)
 
-def lower_array(a):
-    return [x.lower() for x in a]
+def gen_sen(tree):
+    sentece = ""
+    for w in tree.wordlist:
+        sentece += w + ' '
+    return sentece[:-1]
 
 def read_trees(file_path):
     trees = []
     with open(file_path) as f:
-        trees.append(Stree(Tree.fromstring(
-            f.readline())).correct())
+        text = f.readlines()
+    for sentace in text:
+        t = Stree(Tree.fromstring(
+            sentace))
+        t.correct()
+        trees.append(t)
     return trees
 
 
 
 if __name__ == '__main__':
-    data1 = u'../baze/DUC2001_Summarization_Documents/docs/'  
-    data2 = u'../baze/DUC2002_Summarization_Documents/docs/'  
-    data3 = u'../baze/DUC2004_Summarization_Documents/docs/'  
 
-    proba = u'./docs/'
     trees_dic = u'./trees/'
+    end_location = u'./parsed_trees/'
 
-    data = proba
+    data = trees_dic
     
-    start = time.time()
+    start_whole = time.time()
     for cluster in os.listdir(data):
+        start = time.time()
         print('Processing cluster: {}'.format(cluster))
-        #docs = data + cluster
         trees_cluster = trees_dic + cluster
 
-        for doc_name in os.listdir(docs):
-            doc = docs + '/' + doc_name 
-            print(doc)
+        for doc_name in os.listdir(trees_cluster):
 
             if doc_name[0:4] == 'FBIS':
                 continue
 
-            text = read_xml(doc)
             trees = read_trees(trees_cluster + '/' + doc_name)
+            
+            swlist = []
+            for tree in trees:
+                swlist.append([w.lower() for w in tree.wordlist])
+
 
             ### deo za  racunanje ficera ###
-
-            slist = sNLP.sentances_tokenize(text)
-            swlist = [sNLP.word_tokenize(x) for x in slist]
-            swlist = list(map(lower_array, swlist))
 
             wF.tf(swlist)
             wF.cf(swlist)
@@ -69,35 +72,82 @@ if __name__ == '__main__':
 
             wF.stf(swlist)
             wF.scf(swlist)
+            wF.sidf(swlist)
 
-            #wF.update_ss(trees)
-            #wF.update_sd(trees)
+            wF.update_ss(trees)
+            wF.update_sd(trees)
 
-            for idx, sentence in enumerate(slist):
-                tree = sNLP.parse(sentence)
-                pos = sNLP.pos(sentence)
-                wlist = [x.lower() for x in sNLP.word_tokenize(sentence)]
+        cluster_pickle = []
+        print('Writing features . . .')
+        for doc_name in os.listdir(trees_cluster):
+            tree_list = []
+            trees = read_trees(trees_cluster +
+                    '/' + doc_name)
 
-                _ = wF.pos(sentence) # staviti u tree
-                _ = wF.number(sentence) # staviti u tree
-                _ = wF.namedentity(sentence) # staviti u tree
+            for tree in trees:
+                sentence = gen_sen(tree)
+                wlist_tuple = sNLP.pos(sentence)
+                wlist = [w.lower() for w in tree.wordlist]
+
+                pos = wF.pos(wlist_tuple)
+                number = wF.number(sentence)
+                ne = wF.namedentity(sentence) 
+
                 ### Sentence
-                _ = sF.position(sentence, slist)
-                _ = sF.length(sentence)
-                #subs = sF.subs(tree)
-                #depth = sF.depth(tree)
+                position = sF.position(tree, trees)
+                length = sF.length(sentence)
+                subs = tree.subs()
+                depth = tree.depth()
 
-                _ = sF.atf(sentence, wF.tf_dic)
-                _ = sF.acf(sentence, wF.cf_dic)
-                _ = sF.aidf(sentence, wF.idf_dic)
+                atf = sF.atf(sentence, wF.tf_dic)
+                acf = sF.acf(sentence, wF.cf_dic)
+                aidf = sF.aidf(sentence, wF.idf_dic)
 
-                _ = sF.posratio(pos)
-                _ = sF.neration(pos)
-                _ = sF.numberratio(pos)
-                _ = sF.stopratio(wlist)
+                posratio = sF.posratio(wlist_tuple)
+                neration = sF.neration(wlist_tuple)
+                numberratio = sF.numberratio(wlist_tuple)
+                stopratio = sF.stopratio(wlist)
 
-                # Word
+                tree_ftrs = []
+                wlist = [w.lower() for w in tree.wordlist]
+                for idx, word in enumerate(wlist[:-1]):
+                    word_ftrs = np.array([
+                        wF.tf_dic[word],
+                        wF.idf_dic[word],
+                        wF.cf_dic[word],
+                        pos[idx],
+                        ne[idx],
+                        number[idx],
+                        wF.slen_dic[word],
+                        wF.stf_dic[word],
+                        wF.scf_dic[word],
+                        wF.sidf_dic[word],
+                        wF.ss_dic[word],
+                        wF.sd_dic[word],
+                        ], dtype=object)
+                    tree_ftrs.append(word_ftrs)
+                sen_ftrs = np.array([
+                    position,
+                    length,
+                    subs,
+                    depth,
+                    sF.atf,
+                    sF.aidf,
+                    sF.acf,
+                    posratio,
+                    neration,
+                    numberratio,
+                    stopratio,
+                    ])
+                tree_ftrs.append(sen_ftrs)
+                tree_list.append(tree_ftrs)
+            cluster_pickle.append(tree_list)
+        
+        print('Pickleing {} cluster!'.format(cluster))
+        with open(end_location + cluster + '.pickle', 'wb') as p:
+            pickle.dump(cluster_pickle, p)
                 
-                
-    end = time.time()        
-    print('Time passed: {} s'.format(int(end - start)))
+        end = time.time()        
+        print('Time passed: {} s'.format(int(end - start)))
+    end_whole = time.time()
+    print('Total time passed {} s'.format(int(end_whole - start_whole)))

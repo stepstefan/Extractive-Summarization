@@ -57,7 +57,10 @@ class Sentenceftrs:
         idf_sum = 0 
         wlist = [w.lower() for w in  sNLP.word_tokenize(sentence)]
         for word in wlist:
-            idf_sum += idf_dic[word]
+            if word in idf_dic:
+                idf_sum += idf_dic[word]
+            else:
+                idf_sum += max(list(idf_dic.values()))
         return idf_sum / len(sentence)**2
 
     def acf(self, sentence, cf_dic):
@@ -168,9 +171,9 @@ class Wordftrs:
             else:
                 self.cf_dic[word] = 1
 
-    def pos(self, sentence):
+    def pos(self, wlist_tuple):
         """ a 4-dimension binary vector indicates whether the word is a noun, a verb, an adjective or an adverb. If the word has another part-of-speech, the vector is all-zero"""
-        wlist_tuple = sNLP.pos(sentence)
+        #wlist_tuple = sNLP.pos(sentence)
         feature_vec = []
 
         for wordtuple in wlist_tuple:
@@ -261,7 +264,15 @@ class Wordftrs:
         maxes = []  
         for wlist in swlist:
             #wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
-            maxes.append(max([self.idf_dic[wrd] for wrd in wlist]))
+            mx = 0
+            for wrd in wlist:
+                if not wrd in self.idf_dic:
+                    self.idf_dic[wrd] = max(list(self.idf_dic.values()))
+                mx = max(mx, self.idf_dic[wrd])
+            maxes.append(mx)        
+
+
+            #maxes.append(max([self.idf_dic[wrd] for wrd in wlist]))
 
         for idx, wlist in enumerate(swlist):
             #wlist = [w.lower() for w in sNLP.word_tokenize(sentence)]
@@ -274,21 +285,23 @@ class Wordftrs:
     def update_ss(self, tlist):
         """The maximal sub-sentence count of sentences owning the word. A sub-sentence means the node label is S or @S in parsing tree"""
         for tree in tlist:
-            subs = tlist.subs()
-            for word in tree.wordlist():
+            subs = tree.subs()
+            wlist = [w.lower() for w in tree.wordlist]
+            for word in wlist:
                 if not word in self.ss_dic:
                     self.ss_dic[word] = subs
                 else:
                     self.ss_dic[word] = max(
                         self.ss_dic[word], subs)
 
-    def update_sd(self, wlist, depth):
+    def update_sd(self, tlist):
         """The maximal parsing tree depth of sentences owning the word"""
         for tree in tlist:
-            subs = tlist.depth()
-            for word in tree.wordlist():
-                if not word in self.ss_dic:
-                    self.ss_dic[word] = depth
+            depth = tree.depth()
+            wlist = [w.lower() for w in tree.wordlist]
+            for word in wlist:
+                if not word in self.sd_dic:
+                    self.sd_dic[word] = depth
                 else:
-                    self.ss_dic[word] = max(
-                        self.ss_dic[word], depth)
+                    self.sd_dic[word] = max(
+                        self.sd_dic[word], depth)
