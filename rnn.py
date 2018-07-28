@@ -161,3 +161,21 @@ class RNN():
         loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(true_salience, calc_salience))
 
         return loss
+
+    def optimizer(self, loss):
+        """
+        Training optimizer
+        :param loss:
+        :return: train_op
+        """
+        optimizer = tf.train.GradientDescentOptimizer()
+        train_op = optimizer.minimize(loss)
+
+        return train_op
+
+    def run_epoch(self):
+
+
+
+if __name__ == "__main__":
+    print("Done!")
