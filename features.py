@@ -44,32 +44,32 @@ class Sentenceftrs:
                 maxd = len(pos)
         return maxd
 
-    def atf(self, sentence, tf_dic):
+    def atf(self, wlist, tf_dic):
         """The mean TF values of words in the sentence, devided bu sentence length""" 
         tf_sum = 0 
-        wlist = [w.lower() for w in  sNLP.word_tokenize(sentence)]
+        #wlist = [w.lower() for w in  sNLP.word_tokenize(sentence)]
         for word in wlist:
             tf_sum += tf_dic[word]
-        return tf_sum / len(sentence)**2
+        return tf_sum / len(wlist)**2
 
-    def aidf(self, sentence, idf_dic):
+    def aidf(self, wlist, idf_dic):
         """The mean word IDF values in sentence, devided by the sentence lenght"""
         idf_sum = 0 
-        wlist = [w.lower() for w in  sNLP.word_tokenize(sentence)]
+        #wlist = [w.lower() for w in  sNLP.word_tokenize(sentence)]
         for word in wlist:
             if word in idf_dic:
                 idf_sum += idf_dic[word]
             else:
                 idf_sum += max(list(idf_dic.values()))
-        return idf_sum / len(sentence)**2
+        return idf_sum / len(wlist)**2
 
-    def acf(self, sentence, cf_dic):
+    def acf(self, wlist, cf_dic):
         """The mean word CF values in sentence, devided by the sentence length"""
         cf_sum = 0 
-        wlist = [w.lower() for w in  sNLP.word_tokenize(sentence)]
+        #wlist = [w.lower() for w in  sNLP.word_tokenize(sentence)]
         for word in wlist:
             cf_sum += cf_dic[word]
-        return cf_sum / len(sentence)**2
+        return cf_sum / len(wlist)**2
         
     def posratio(self, tags):
         """The number of nouns, verbs, adjectives and adverbs in the sentence, devided by sentence length"""
@@ -191,10 +191,10 @@ class Wordftrs:
         
         return feature_vec
 
-    def namedentity(self, sentence):
+    def namedentity(self, wlist):
         """ a binary value equals one iff the output of named entity classifier from CoreNLP is not entity"""
         feature_vec = []
-        for word in sNLP.word_tokenize(sentence):
+        for word in wlist:
             ne = sNLP.ner(word)[0]
             if ne[1] == "O":
                 feature = 0
@@ -204,9 +204,9 @@ class Wordftrs:
             
         return feature_vec
 
-    def number(self, sentence):
+    def number(self, wlist_tuple):
         """ a binary value denotes if whether the word is a number"""
-        wlist_tuple = sNLP.pos(sentence)
+        #wlist_tuple = sNLP.pos(sentence)
         feature_vec = []
 
         for wordtuple in wlist_tuple:

@@ -21,12 +21,20 @@ sNLP = StanfordNLP()
 wF = Wordftrs(idf_dic)
 sF = Sentenceftrs(stopwords)
 
-
+"""
 def gen_sen(tree):
     sentece = ""
     for w in tree.wordlist:
         sentece += w + ' '
     return sentece[:-1]
+"""
+def make_wlist_tuple(tree):
+    wlist_tuple = []
+    for node in tree.getTerminals():
+        wlist_tuple.append((
+            node.label, node.parent.label    
+        ))
+    return wlist_tuple
 
 
 def read_trees(file_path):
@@ -91,23 +99,23 @@ if __name__ == '__main__':
                     '/' + doc_name)
 
             for tree in trees:
-                sentence = gen_sen(tree)
-                wlist_tuple = sNLP.pos(sentence)
+                #sentence = gen_sen(tree)
+                wlist_tuple = make_wlist_tuple(tree)
                 wlist = [w.lower() for w in tree.wordlist]
 
                 pos = wF.pos(wlist_tuple)
-                number = wF.number(sentence)
-                ne = wF.namedentity(sentence) 
+                number = wF.number(wlist_tuple)
+                ne = wF.namedentity(wlist) 
 
                 ### Sentence
                 position = sF.position(tree, trees)
-                length = sF.length(sentence)
+                length = len(wlist)
                 subs = tree.subs()
                 depth = tree.depth()
 
-                atf = sF.atf(sentence, wF.tf_dic)
-                acf = sF.acf(sentence, wF.cf_dic)
-                aidf = sF.aidf(sentence, wF.idf_dic)
+                atf = sF.atf(wlist, wF.tf_dic)
+                acf = sF.acf(wlist, wF.cf_dic)
+                aidf = sF.aidf(wlist, wF.idf_dic)
 
                 posratio = sF.posratio(wlist_tuple)
                 neration = sF.neration(wlist_tuple)
