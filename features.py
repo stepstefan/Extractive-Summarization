@@ -195,7 +195,11 @@ class Wordftrs:
         """ a binary value equals one iff the output of named entity classifier from CoreNLP is not entity"""
         feature_vec = []
         for word in wlist:
-            ne = sNLP.ner(word)[0]
+            try:
+                ne = sNLP.ner(word)[0]
+            except:
+                feature_vec.append(0)
+                continue
             if ne[1] == "O":
                 feature = 0
             else:
