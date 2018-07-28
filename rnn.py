@@ -3,13 +3,24 @@ import numpy as np
 import os
 import matplotlib as plt
 from tree import *
-
+import pickle
 
 
 class RNN():
 
     def load_data(self):
-        """Loads training data in correct format"""
+        """
+            Loads training data in correct format
+        """
+        data_dic = 'probni/'
+        data = []
+        for p_file in os.listdir(data_dic):
+            files = pickle.load( open(data_dic + p_file, 'rb') )
+            for tree_list in files:
+                for tree in tree_list:
+                    data.append(tree)
+        return data
+
 
     def add_variables(self):
         """
