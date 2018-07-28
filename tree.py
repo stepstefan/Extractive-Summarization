@@ -77,7 +77,7 @@ class Node:
     def subs(self):
         """Sub-sentence count at node level"""
         # print(self.label)
-        if self.label == 'S' or self.label == '@S':
+        if (self.label == 'S' or self.label == '@S') and self.isTerminal is  False:
             #print(self.label)
             if self.right is None:
                 return 1 + self.left.subs()
