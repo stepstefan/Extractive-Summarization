@@ -157,8 +157,12 @@ if __name__ == '__main__':
             cluster_pickle.append(trees)
         
         print('Pickleing {} cluster!'.format(cluster))
-        with open(end_location + cluster + '.pickle', 'wb') as p:
-            pickle.dump(cluster_pickle, p)
+        try:
+            with open(end_location + cluster + '.pickle', 'wb') as p:
+                pickle.dump(cluster_pickle, p)
+        except:
+            print('{} failed to save'.foramat(cluster))
+            continue
                 
         end = time.time()        
         print('Time passed: {} s'.format(int(end - start)))
