@@ -9,8 +9,10 @@ from tree import *
 from nltk.tree import Tree
 
 
-with open('./duc2002.json', 'r') as f:
+with open('./idf.json', 'r') as f:
     idf_dic = json.load(f)
+    for word in idf_dic:
+        idf_dic[word] = len(idf_dic) / idf_dic[word]
 
 with open('rouge_155.txt') as f:
     stopwords = [w.strip() for w in f.readlines()]
@@ -41,15 +43,17 @@ def read_trees(file_path):
 
 if __name__ == '__main__':
 
-    trees_dic = u'./trees/'
-    end_location = u'./parsed_trees/'
+    ###########
+    trees_dic = u'./trees2002/'
+    end_location = u'./parsed_trees2002/'
+    ###########
 
     data = trees_dic
     
     start_whole = time.time()
-    for cluster in os.listdir(data):
+    for idx, cluster in enumerate(os.listdir(data)):
         start = time.time()
-        print('Processing cluster: {}'.format(cluster))
+        print('Processing cluster: {} ({}/{})'.format(cluster, idx+1, len(os.listdir(data))))
         trees_cluster = trees_dic + cluster
 
         for doc_name in os.listdir(trees_cluster):
