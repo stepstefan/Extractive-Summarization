@@ -3,14 +3,24 @@ import numpy as np
 import os
 import matplotlib as plt
 from tree import *
-
-class Config():
+import pickle
 
 
 class RNN():
 
     def load_data(self):
-        """Loads training data in correct format"""
+        """
+            Loads training data in correct format
+        """
+        data_dic = 'probni/'
+        data = []
+        for p_file in os.listdir(data_dic):
+            files = pickle.load( open(data_dic + p_file, 'rb') )
+            for tree_list in files:
+                for tree in tree_list:
+                    data.append(tree)
+        return data
+
 
 
     def add_variables(self):
@@ -108,7 +118,7 @@ class RNN():
         if tag == "root":
             with tf.get_variable_scope("REGRESSION", reuse=True):
                 Wr1 = tf.get_variable("Wr1")
-                Wr2 = tf.get_variable("Wr3")
+                Wr3 = tf.get_variable("Wr3")
                 br = tf.get_variable("br")
 
                 salience_score_tensor = tf.sigmoid(tf.add(tf.add(tf.matmul(feature_tensor, Wr1), tf.matmul(sentence_raw_tensor, Wr3)), br))
