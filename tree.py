@@ -45,8 +45,13 @@ class Node:
                 self.left.create(tree[(0,)], wordlist)
             
         if (1,) in tpos:
-            self.right = Node(tree[(1,)].label(), False, self)
-            self.right.create(tree[(1,)], wordlist)
+            if isinstance(tree[(1,)], str):
+                self.right = Node(tree[(1,)], True, self)
+                self.isPreTerminal = True
+                self.right.start = self.right.end = self.start = self.end = wordlist.index(tree[(1,)])
+            else:
+                self.right = Node(tree[(1,)].label(), False, self)
+                self.right.create(tree[(1,)], wordlist)
 
         if self.left is not None and self.right is not None:
             self.start = min(self.left.start, self.right.start)
@@ -98,6 +103,28 @@ class Node:
             else:
                 self.left.correct()
                 self.right.correct()
+        if self.isPreTerminal is True and self.right is not None:
+            print(self.label)
+            self.isPreTerminal = False
+            #tmpl = self.left
+            #tmpr = self.right
+            tmpl = Node("", False, None)
+            tmpr = Node("", False, None)
+            replace(tmpl, self.left)
+            replace(tmpr, self.right)
+            self.left = Node(self.label, False, self)
+            self.right = Node(self.label, False, self)
+            self.left.isPreTerminal = True
+            self.right.isPreTerminal = True
+            self.left.left = tmpl
+            self.right.left = tmpr
+            self.left.start = self.left.end = tmpl.start
+            self.right.start = self.right.end = tmpr.start
+            self.start = min(self.left.start, self.right.start)
+            self.end = max(self.left.end, self.right.end)
+            self.left.left.parent = self.left
+            self.right.left.parent = self.right
+            print("Reroute ", self.label, " to  ", self.left.label, " -  ", self.left.left.label, " and  ", self.right.label, " -  ", self.right.left.label)
 
     def getTerminals(self):
         """Terminal nodes"""
@@ -130,7 +157,7 @@ class Node:
         else:
             if self.isPreTerminal:
                 word = wordlist[self.start]
-                if word != ".":
+                if word != "." or word != ".." or word != "...":
                     self.salience = rouge.get_scores(wordlist[self.start], reference)[0]["rouge-1"]["r"]
                 else:
                     self.salience = 0
