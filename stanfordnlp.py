@@ -65,21 +65,25 @@ def read_xml(file_name):
         if not tree.find('LEADPARA') is None:
             txt += tree.find('LEADPARA').text.strip().replace(';', ' ').replace('\n', ' ')
             txt += ' '
-        txt += tree.find('TEXT').text.strip().replace(';', ' ').replace('\n', ' ')
+        for TEXT in tree.findall('TEXT'):
+            txt += TEXT.text.strip().replace(';', ' ').replace('\n', ' ')
         return txt
     elif name[0:3] == 'WSJ':
         if not tree.find('LP') is None:
             txt += tree.find('LP').text.strip().replace('\n', ' ')
             txt += ' '
-        txt += tree.find('TEXT').text.strip().replace('\n', ' ')
+        for TEXT in tree.findall('TEXT'):
+            txt += TEXT.text.strip().replace(';', ' ').replace('\n', ' ')
         return txt
-    elif name[0:2] == 'AP':
-        txt += tree.find('TEXT').text.strip().replace('\n', ' ')
+    elif name[0:2] == 'AP' or name[0:2] == 'FT':
+        for TEXT in tree.findall('TEXT'):
+            txt += TEXT.text.strip().replace(';', ' ').replace('\n', ' ')
         return txt
-    elif name[0:2] == 'LA' or name[0:2] == 'FT':
-        for p in tree.find('TEXT').getchildren():
-            txt += p.text.strip().replace('\n', ' ')
-            txt += ' '
+    elif name[0:2] == 'LA':
+        for TEXT in tree.findall('TEXT'):
+            for p in TEXT.getchildren():
+                txt += p.text.strip().replace('\n', ' ')
+                txt += ' '
         return txt
     else:
         return []

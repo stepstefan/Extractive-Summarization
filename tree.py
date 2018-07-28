@@ -159,6 +159,7 @@ class Stree:
         self.root = Node(tree[()].label(), False, None)
         self.wordlist = tree.leaves()
         self.root.create(tree, self.wordlist)
+        self.sentence_features = np.array([])
 
     def correct(self):
         """ Corrects tree for problems with multiple continous nodes with one child and problems with dot at the end of the sentence"""
@@ -170,10 +171,11 @@ class Stree:
 
         return self.root.getTerminals()
 
-    def addFeatures(self, features):
+    def addFeatures(self, features, sentence_features):
         """Adding raw features ad word and sentance level"""
 
         self.root.addFeatures(features)
+        self.sentence_features = sentence_features
 
     def addSalience(self, reference, alpha):
         """Adding Salience scores based on reference summaries"""

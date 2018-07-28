@@ -29,14 +29,16 @@ def gen_sen(tree):
 
 def read_trees(file_path):
     trees = []
-    with open(file_path) as f:
-        text = f.readlines()
-    for sentace in text:
-        t = Stree(Tree.fromstring(
-            sentace))
-        t.correct()
-        trees.append(t)
-    return trees
+    with open('log', 'w') as log:
+        with open(file_path) as f:
+            text = f.readlines()
+        for sentace in text:
+            log.write(sentace)
+            t = Stree(Tree.fromstring(
+                sentace))
+            t.correct()
+            trees.append(t)
+        return trees
 
 
 
@@ -114,7 +116,7 @@ if __name__ == '__main__':
 
                 tree_ftrs = []
                 wlist = [w.lower() for w in tree.wordlist]
-                for idx, word in enumerate(wlist[:-1]):
+                for idx, word in enumerate(wlist):
                     word_ftrs = np.array([
                         wF.tf_dic[word],
                         wF.idf_dic[word],
@@ -143,9 +145,8 @@ if __name__ == '__main__':
                     numberratio,
                     stopratio,
                     ])
-                tree_ftrs.append(sen_ftrs)
-                tree_list.append(tree_ftrs)
-            cluster_pickle.append(tree_list)
+                tree.addFeatures(tree_ftrs, sen_ftrs)
+            cluster_pickle.append(trees)
         
         print('Pickleing {} cluster!'.format(cluster))
         with open(end_location + cluster + '.pickle', 'wb') as p:
