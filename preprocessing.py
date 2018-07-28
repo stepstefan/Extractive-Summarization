@@ -1,4 +1,4 @@
-import os
+import os, sys
 import time
 import numpy as np
 import pickle
@@ -54,8 +54,8 @@ def read_trees(file_path):
 if __name__ == '__main__':
 
     ###########
-    trees_dic = u'./trees2002/'
-    end_location = u'./parsed_trees2002/'
+    trees_dic = sys.argv[1] + '/'
+    end_location = sys.argv[2] + '/'
     ###########
 
     data = trees_dic
@@ -161,7 +161,7 @@ if __name__ == '__main__':
             with open(end_location + cluster + '.pickle', 'wb') as p:
                 pickle.dump(cluster_pickle, p)
         except:
-            print('{} failed to save'.foramat(cluster))
+            print('{} failed to save'.format(cluster))
             continue
                 
         end = time.time()        
