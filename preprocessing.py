@@ -21,11 +21,13 @@ sNLP = StanfordNLP()
 wF = Wordftrs(idf_dic)
 sF = Sentenceftrs(stopwords)
 
+
 def gen_sen(tree):
     sentece = ""
     for w in tree.wordlist:
         sentece += w + ' '
     return sentece[:-1]
+
 
 def read_trees(file_path):
     trees = []
@@ -39,7 +41,6 @@ def read_trees(file_path):
             t.correct()
             trees.append(t)
         return trees
-
 
 
 if __name__ == '__main__':
@@ -68,8 +69,7 @@ if __name__ == '__main__':
             for tree in trees:
                 swlist.append([w.lower() for w in tree.wordlist])
 
-
-            ### deo za  racunanje ficera ###
+            # deo za  racunanje ficera ###
 
             wF.tf(swlist)
             wF.cf(swlist)
