@@ -12,6 +12,7 @@ def replace(node1, node2):
     node1.start = node2.start
     node1.end = node2.end
     node1.salience = node2.salience
+    node1.det_salience = node2.det_salience
     node1.feature = node2.feature
     node1.isPreTerminal = node2.isPreTerminal
     node1.isTerminal = node2.isTerminal
@@ -25,6 +26,7 @@ class Node:
         self.right = None
         self.parent = parent
         self.salience = -1
+        self.det_salience = -1
         self.feature = np.array([])
         self.start = -1
         self.end = -1
