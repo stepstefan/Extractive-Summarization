@@ -8,6 +8,7 @@ from features import Sentenceftrs, Wordftrs
 from tree import *
 from nltk.tree import Tree
 
+sys.setrecursionlimit(3000)
 
 with open('./idf.json', 'r') as f:
     idf_dic = json.load(f)
@@ -21,13 +22,6 @@ sNLP = StanfordNLP()
 wF = Wordftrs(idf_dic)
 sF = Sentenceftrs(stopwords)
 
-"""
-def gen_sen(tree):
-    sentece = ""
-    for w in tree.wordlist:
-        sentece += w + ' '
-    return sentece[:-1]
-"""
 def make_wlist_tuple(tree):
     wlist_tuple = []
     for node in tree.getTerminals():
@@ -161,7 +155,7 @@ if __name__ == '__main__':
             with open(end_location + cluster + '.pickle', 'wb') as p:
                 pickle.dump(cluster_pickle, p)
         except:
-            print('{} failed to save'.format(cluster))
+            print('{} failed to save! ################ IDIOTE GLUPI!!!!!!!!'.format(cluster))
             continue
                 
         end = time.time()        
