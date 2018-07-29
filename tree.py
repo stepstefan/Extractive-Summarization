@@ -13,7 +13,6 @@ def replace(node1, node2):
     node1.start = node2.start
     node1.end = node2.end
     node1.salience = node2.salience
-    node1.det_salience = node2.det_salience
     node1.feature = node2.feature
     node1.isPreTerminal = node2.isPreTerminal
     node1.isTerminal = node2.isTerminal
@@ -27,7 +26,6 @@ class Node:
         self.right = None
         self.parent = parent
         self.salience = -1
-        self.det_salience = -1
         self.feature = np.array([])
         self.start = -1
         self.end = -1
@@ -192,6 +190,27 @@ class Node:
             self.right.traverse(function, args)
         function(self, args)
 
+    def getSaliences(self):
+        """Get true saliences values at node level"""
+
+        saliences = []
+        if self.label == "ROOT":
+            sal_left = self.left.getSaliences()
+            saliences.extend(sal_left)
+            saliences.appen(self.salience)
+
+        if self.isPreTerminal:
+            saliences.append(self.salience)
+
+        if self.isPreTerminal is not True and self.label != "ROOT" and self.isTerminalis not True:
+            sal_left = self.left.getSaliences()
+            sal_right = self.right.getSaliences()
+            saliences.extend(sal_left)
+            saliences.append(self.salience)
+            saliences.extend(sal_right)
+
+        return saliences
+
 
 class Stree:
     def __init__(self, tree):
@@ -247,6 +266,11 @@ class Stree:
         """Left traverse tree with funnction"""
 
         self.root.traverse(function, args)
+
+    def getSaliences(self):
+        """Get true saliences values for each node"""
+
+        return self.root.getSaliences()
 
 
 def printnode(node, args=None):
