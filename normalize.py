@@ -13,9 +13,9 @@ for idx, pic_name in enumerate(os.listdir(dir_name)):
         + pic_name, 'rb'))
 
     reference = []
-    for s in os.listdir('summeries/'):
+    for s in os.listdir('summaries/'):
         if s.startswith(pic_name.split('.')[0]):
-            reference.append('summeries/' + s)
+            reference.append('summaries/' + s)
 
     tf         = 0
     idf        = 0
