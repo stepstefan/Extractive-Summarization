@@ -139,14 +139,14 @@ if __name__ == '__main__':
                     length,
                     subs,
                     depth,
-                    sF.atf,
-                    sF.aidf,
-                    sF.acf,
+                    atf,
+                    aidf,
+                    acf,
                     posratio,
                     neration,
                     numberratio,
                     stopratio,
-                    ])
+                    ], dtype=object)
                 tree.addFeatures(tree_ftrs, sen_ftrs)
             cluster_pickle.append(trees)
         

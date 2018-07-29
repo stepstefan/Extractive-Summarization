@@ -1,6 +1,7 @@
 import numpy as np
 from nltk.tree import Tree
 from rouge import Rouge
+from xml.etree import ElementTree
 
 rouge = Rouge()
 
@@ -151,26 +152,36 @@ class Node:
             for i in range(length):
                 terminals[i].feature = features[i]
 
-    def addSalience(self, wordlist, reference, alpha):
+    def addSalience(self, wordlist, refs, alpha):
         """Add salience scores on node level"""
+
+        self.salience = 0
 
         if alpha > 1:
             print("Alpha must be less than or equal 1!")
         else:
-            if self.isPreTerminal:
-                word = wordlist[self.start]
-                if word != "." or word != ".." or word != "...":
-                    self.salience = rouge.get_scores(wordlist[self.start], reference)[0]["rouge-1"]["r"]
+            for reference in refs:
+                if self.isPreTerminal:
+                    try:
+                        self.salience += rouge.get_scores(wordlist[self.start], reference)[0]["rouge-1"]["r"]
+                    except:
+                        self.salience += 0
+                        continue
                 else:
-                    self.salience = 0
-            else:
+                    try:
+                        scores = rouge.get_scores(' '.join(wordlist[self.start:self.end+1]), reference)
+                        self.salience += scores[0]["rouge-1"]["r"]*alpha + scores[0]["rouge-2"]["r"]*(1-alpha)
+                        #print(self.salience)
+                    except:
+                        self.salience += 0
 
-                scores = rouge.get_scores('  '.join(wordlist[self.start:self.end+1]), reference)
-                self.salience = scores[0]["rouge-1"]["r"]*alpha + scores[0]["rouge-2"]["r"]*(1-alpha)
-                if self.left is not None:
-                    self.left.addSalience(wordlist, reference, alpha)
-                if self.right is not None:
-                    self.right.addSalience(wordlist, reference, alpha)
+            self.salience = self.salience / len(refs)
+                    
+            if self.left is not None:
+                self.left.addSalience(wordlist, refs, alpha)
+            if self.right is not None:
+                self.right.addSalience(wordlist, refs, alpha)
+            #print('{} : {}'.format(self.label, self.salience))
 
     def traverse(self, function, args):
         """Left traverse tree at node level with function"""
@@ -208,8 +219,19 @@ class Stree:
 
     def addSalience(self, reference, alpha):
         """Adding Salience scores based on reference summaries"""
+        refs = []
+        for ref in reference:
+            tree = ElementTree.parse(ref).getroot()
+            reference_string = ""
 
-        self.root.addSalience(self.wordlist, reference, alpha)
+            if tree.getchildren():
+                for s in tree.findall('s'):
+                    reference_string += s.text.strip().replace('\n', ' ') + " "
+            else:
+                reference_string += tree.text.strip().replace('\n', ' ')
+            refs.append(reference_string)
+
+        self.root.addSalience(self.wordlist, refs, alpha)
 
     def depth(self):
         """Depth of tree"""
