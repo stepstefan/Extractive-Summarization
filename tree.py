@@ -197,12 +197,12 @@ class Node:
         if self.label == "ROOT":
             sal_left = self.left.getSaliences()
             saliences.extend(sal_left)
-            saliences.appen(self.salience)
+            saliences.append(self.salience)
 
         if self.isPreTerminal:
             saliences.append(self.salience)
 
-        if self.isPreTerminal is not True and self.label != "ROOT" and self.isTerminalis is not True:
+        if self.isPreTerminal is not True and self.label != "ROOT" and self.isTerminal is not True:
             sal_left = self.left.getSaliences()
             sal_right = self.right.getSaliences()
             saliences.extend(sal_left)
