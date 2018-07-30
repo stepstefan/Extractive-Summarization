@@ -12,14 +12,16 @@ class RNN():
         """
             Loads training data in correct format
         """
-        data_dic = 'probni/'
+        testPercent = .7
+        data_dic = 'probni/' #!!!!!!
         data = []
         for p_file in os.listdir(data_dic):
             files = pickle.load( open(data_dic + p_file, 'rb') )
             for tree_list in files:
                 for tree in tree_list:
                     data.append(tree)
-        return data
+        splitIndex = int(round(testPercent * len(data)))
+        return data[:splitIndex], data[splitIndex:]
 
 
     def add_variables(self):
