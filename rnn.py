@@ -22,9 +22,9 @@ class RNN():
         """
         data = []
         testPercent = .7
-        data_dic = 'probni/' #!!!!!!
+        data_dic = 'probni/'  
         for p_file in os.listdir(data_dic):
-            files = pickle.load( open(data_dic + p_file, 'rb') )
+            files = pickle.load(open(data_dic + p_file, 'rb') )
             for tree_list in files:
                 for tree in tree_list:
                     data.append(tree)
