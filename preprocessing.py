@@ -123,7 +123,10 @@ if __name__ == '__main__':
                         wF.tf_dic[word],
                         wF.idf_dic[word],
                         wF.cf_dic[word],
-                        pos[idx],
+                        pos[idx][0],
+                        pos[idx][1],
+                        pos[idx][2],
+                        pos[idx][3],
                         ne[idx],
                         number[idx],
                         wF.slen_dic[word],
@@ -132,7 +135,7 @@ if __name__ == '__main__':
                         wF.sidf_dic[word],
                         wF.ss_dic[word],
                         wF.sd_dic[word],
-                        ], dtype=object)
+                        ])
                     tree_ftrs.append(word_ftrs)
                 sen_ftrs = np.array([
                     position,
@@ -142,11 +145,14 @@ if __name__ == '__main__':
                     atf,
                     aidf,
                     acf,
-                    posratio,
+                    posratio[0],
+                    posratio[1],
+                    posratio[2],
+                    posratio[3],
                     neration,
                     numberratio,
                     stopratio,
-                    ], dtype=object)
+                    ])
                 tree.addFeatures(tree_ftrs, sen_ftrs)
             cluster_pickle.append(trees)
         

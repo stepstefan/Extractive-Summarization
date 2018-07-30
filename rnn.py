@@ -1,11 +1,10 @@
-import tensorflow as tf
 import numpy as np
 import os
 import matplotlib as plt
 from tree import *
 import pickle
 from collections import OrderedDict
-
+import tensorflow as tf
 
 """
 Parameters of network
@@ -21,16 +20,18 @@ class RNN():
         """
             Loads training data in correct format
         """
-        data_dic = 'probni/'
-        training_data = []
+        data = []
+        testPercent = .7
+        data_dic = 'probni/' #!!!!!!
         for p_file in os.listdir(data_dic):
             files = pickle.load( open(data_dic + p_file, 'rb') )
             for tree_list in files:
                 for tree in tree_list:
-                    training_data.append(tree)
+                    data.append(tree)
+        splitIndex = int(round(testPercent * len(data)))
 
-        self.training_data = training_data
-        self.validate_data = []
+        self.training_data = data[:splitIndex]
+        self.validate_data = data[splitIndex:]
 
     def add_variables(self):
         """
@@ -325,3 +326,4 @@ class RNN():
 
 if __name__ == "__main__":
     print("Done!")
+
