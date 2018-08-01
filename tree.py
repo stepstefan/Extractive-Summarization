@@ -240,6 +240,7 @@ class Stree:
         """Adding Salience scores based on reference summaries"""
         refs = []
         for ref in reference:
+            """
             tree = ElementTree.parse(ref).getroot()
             reference_string = ""
 
@@ -249,6 +250,9 @@ class Stree:
             else:
                 reference_string += tree.text.strip().replace('\n', ' ')
             refs.append(reference_string)
+            """
+            with open(ref, 'r') as f:
+                refs.append(f.readline())
 
         self.root.addSalience(self.wordlist, refs, alpha)
 

@@ -75,7 +75,7 @@ def read_xml(file_name):
         for TEXT in tree.findall('TEXT'):
             txt += TEXT.text.strip().replace(';', ' ').replace('\n', ' ')
         return txt
-    elif name[0:2] == 'AP' or name[0:2] == 'FT':
+    elif name[0:2] == 'AP' or name[0:2] == 'FT' or name[0:3] == 'NYT':
         for TEXT in tree.findall('TEXT'):
             txt += TEXT.text.strip().replace(';', ' ').replace('\n', ' ')
         return txt
@@ -85,5 +85,13 @@ def read_xml(file_name):
                 txt += p.text.strip().replace('\n', ' ')
                 txt += ' '
         return txt
+    elif name[0] == 'd':
+        if tree.getchildren():
+            for s in tree.getchildren():
+                txt += s.text.strip().replace(';', ' ').replace('\n', ' ') + ' '
+        else:
+            txt += tree.text.strip().replace(';', ' ').replace('\n', ' ')
+        return txt
+
     else:
         return []
