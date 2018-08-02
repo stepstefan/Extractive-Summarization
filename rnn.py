@@ -1,6 +1,6 @@
 import numpy as np
 import os
-import matplotlib as plt
+import matplotlib.pyplot as plt
 from tree import *
 import pickle
 from collections import OrderedDict
@@ -10,10 +10,11 @@ import time
 """
 Parameters of network
 """
-learning_rate = 1
-regularization = 0.0
-NO_EPOCHS = 1
+learning_rate = 0.01
+regularization = 0.1
+NO_EPOCHS = 10
 
+"""
 Wr1_reg = np.array([])
 Wr2_reg = np.array([])
 Wr3_reg = np.array([])
@@ -21,7 +22,8 @@ Wt_reg = np.array([])
 Wp_reg = np.array([])
 br_reg = np.array([])
 bt_reg = np.array([])
-bp_reg = np.array([])
+bp_reg = 
+"""
 
 
 class RNN():
@@ -32,11 +34,13 @@ class RNN():
         """
 
         data = []
-        testPercent = .8
+        testPercent = 1.0
         data_dic = 'probni/'
+        cls = 0
 
         for p_file in os.listdir(data_dic):
             files = pickle.load(open(data_dic + p_file, 'rb') )
+            cls += 1
             for tree_list in files:
                 for tree in tree_list:
                     data.append(tree)
@@ -45,6 +49,8 @@ class RNN():
 
         self.training_data = data[:splitIndex]
         self.validate_data = data[splitIndex:]
+
+        print("Loaded ", cls, "clusters.")
 
     def add_variables(self):
         """
@@ -63,6 +69,8 @@ class RNN():
             Wr3 - regression matrix used for calc. salience scores with raw sentence features
             br - bias for calc. salience scores (regression process)
         """
+
+        global Wr1_reg, Wr2_reg, Wr3_reg, Wt_reg, Wp_reg, br_reg, bt_reg, bp_reg
 
         with tf.variable_scope('PROJECTION'):
 
@@ -289,13 +297,14 @@ class RNN():
 
         return train_op
 
-    def run_epoch(self):
+    def run_epoch(self, epoch):
         """
         Runs training of one epoch on whole training data set and writes learned parameters of nets
         :return: losses
         """
-        print("USO")
         losses = []
+        print("Start of epoch ", epoch, " : ")
+        global Wr1_reg, Wr2_reg, Wr3_reg, Wt_reg, Wp_reg, br_reg, bt_reg, bp_reg
 
         for idx in range(len(self.training_data)):
             with tf.Graph().as_default():
@@ -309,7 +318,12 @@ class RNN():
                     sentence_raw_tensor = tf.reshape(sentence_raw_tensor, shape=[1, 14])
                     #assert isinstance(sentence_raw_tensor, tf.Tensor)
 
-                    feature_dic, salience_dic = self.inference(tree.root, sentence_raw_tensor=sentence_raw_tensor)
+                    try:
+                        feature_dic, salience_dic = self.inference(tree.root, sentence_raw_tensor=sentence_raw_tensor)
+                    except:
+                        print("Puko ", idx)
+                        continue
+
                     calc_saliences = []
                     for key, value in salience_dic.items():
                         calc_saliences.append(value)
@@ -321,7 +335,9 @@ class RNN():
                     loss = self.loss(tf.reshape(t_s, shape=[l]), tf.reshape(calc_saliences, shape=[l]))
                     train_op = self.optimizer(loss)
                     train_op.run()
-                    losses.append(loss)
+                    loss_read = loss.eval()
+                    losses.append(loss_read)
+                    #print("\t Sentence ", idx + 1, " in epoch ", epoch, " has loss: ", loss_read)
 
                     with tf.variable_scope("REGRESSION", reuse=True):
                         Wr1 = tf.get_variable("Wr1")
@@ -343,10 +359,12 @@ class RNN():
                         Wp = tf.get_variable("Wp")
                         Wp_reg = Wp.eval()
                         bp = tf.get_variable("bp")
-                        br_reg = br.eval()
+                        bp_reg = bp.eval()
 
-            print(Wr1_reg)
+                    # print(Wr1_reg)
+
         tf.reset_default_graph()
+        print("End of epoch ", epoch, " ! ")
         return losses
 
     def validate(self):
@@ -379,33 +397,63 @@ class RNN():
 
         if not os.path.exists("./weights"):
             os.makedirs("./weights")
-            
-        train_losses = []
-        val_losses = []
 
+        if not os.path.exists("./losses"):
+            os.makedirs("./losses")
+            
+        #train_losses = []
+        mean_train_losses = []
 
         for epoch in range(NO_EPOCHS):
-                train_loss = self.run_epoch()
-                #val_loss = self.validate()
-                #train_losses.append(np.mean(train_loss))
-                #val_losses.append(np.mean(val_loss))
+                start = time.time()
+                train_loss = self.run_epoch(epoch + 1)
+                # train_losses.update(train_loss)
+                # print("Writing sentence losses in file...")
+                # with open("./losses/all_sentence_losses", 'a') as f:
+                    # np.savetxt(f, train_loss)
+                print("Writting weights in file...")
+                with open("./weights/w"+str(epoch), 'w') as f:
+                    np.savetxt(f, Wr1_reg)
+                    np.savetxt(f, Wr2_reg)
+                    np.savetxt(f, Wr3_reg)
+                    np.savetxt(f, br_reg)
+                    np.savetxt(f, Wt_reg)
+                    np.savetxt(f, bt_reg)
+                    np.savetxt(f, Wp_reg)
+                    np.savetxt(f, bp_reg)
+
+                mean = np.mean(train_loss)
+                print("Mean loss in epoch: ", mean)
+                mean_train_losses.append(mean)
+                end = time.time()
+                print("Epoch took ", end-start, " to complete")
+
+        plt.plot(mean_train_losses)
+        plt.title("Losses per epoch")
+        plt.show()
+
+
 
 
 if __name__ == "__main__":
     start = time.time()
-    Wr1_reg=np.random.normal(0.0, 0.1, [8, 1])
-    Wr2_reg=np.random.normal(0.0, 0.1, [15, 1])
-    Wr3_reg=np.random.normal(0.0, 0.1, [14, 1])
-    Wt_reg=np.random.normal(0.0, 0.1, [16, 8])
-    Wp_reg=np.random.normal(0.0, 0.1, [15, 8])
-    br_reg=np.random.normal(0.0, 0.1, [1, 1])
-    bt_reg=np.random.normal(0.0, 0.1, [1, 8])
-    bp_reg=np.random.normal(0.0, 0.1, [1, 8])
+    Wr1_reg = np.random.normal(0.0, 0.1, [8, 1])
+    Wr2_reg = np.random.normal(0.0, 0.1, [15, 1])
+    Wr3_reg = np.random.normal(0.0, 0.1, [14, 1])
+    br_reg = np.random.normal(0.0, 0.1, [1, 1])
+
+    Wt_reg = np.random.normal(0.0, 0.1, [16, 8])
+    bt_reg = np.random.normal(0.0, 0.1, [1, 8])
+
+    Wp_reg = np.random.normal(0.0, 0.1, [15, 8])
+    bp_reg = np.random.normal(0.0, 0.1, [1, 8])
+
+
+
     r = RNN()
-    #r.add_variables()
     r.load_data()
     r.training()
 
-    print("Done!")
+    print("Finished training!")
     end = time.time()
     print("Time = ", (int)(end-start))
