@@ -9,3 +9,5 @@ rescale200*
 log
 summaries/
 weights/
+*.pickle
+probni/
