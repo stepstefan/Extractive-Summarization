@@ -14,17 +14,6 @@ learning_rate = 0.01
 regularization = 0.1
 NO_EPOCHS = 10
 
-"""
-Wr1_reg = np.array([])
-Wr2_reg = np.array([])
-Wr3_reg = np.array([])
-Wt_reg = np.array([])
-Wp_reg = np.array([])
-br_reg = np.array([])
-bt_reg = np.array([])
-bp_reg = 
-"""
-
 
 class RNN():
 
@@ -39,7 +28,7 @@ class RNN():
         cls = 0
 
         for p_file in os.listdir(data_dic):
-            files = pickle.load(open(data_dic + p_file, 'rb') )
+            files = pickle.load(open(data_dic + p_file, 'rb'))
             cls += 1
             for tree_list in files:
                 for tree in tree_list:
@@ -303,8 +292,8 @@ class RNN():
         :return: losses
         """
         losses = []
-        print("Start of epoch ", epoch, " : ")
         global Wr1_reg, Wr2_reg, Wr3_reg, Wt_reg, Wp_reg, br_reg, bt_reg, bp_reg
+        print("Start of epoch ", epoch)
 
         for idx in range(len(self.training_data)):
             with tf.Graph().as_default():
@@ -437,6 +426,7 @@ class RNN():
 
 if __name__ == "__main__":
     start = time.time()
+    print("Started!")
     Wr1_reg = np.random.normal(0.0, 0.1, [8, 1])
     Wr2_reg = np.random.normal(0.0, 0.1, [15, 1])
     Wr3_reg = np.random.normal(0.0, 0.1, [14, 1])
@@ -450,7 +440,7 @@ if __name__ == "__main__":
 
 
 
-    r = RNN()
+    r =  RNN()
     r.load_data()
     r.training()
 
